@@ -1,0 +1,17 @@
+.info-note {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.info-note--info {
+  background: var(--cv-blue-bg);
+  color: var(--cv-blue-text);
+}
+
+.info-note--warning {
+  background: var(--cv-orange-bg);
+  color: var(--cv-orange-text);
+}

@@ -1,0 +1,21 @@
+.tab-header {
+  margin-bottom: 16px;
+}
+
+.tab-header__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cv-navy);
+}
+
+.tab-header__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cv-blue-text);
+  cursor: help;
+}

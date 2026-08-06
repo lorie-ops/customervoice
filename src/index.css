@@ -1,0 +1,74 @@
+/*
+ * Visual rules (docs/PROJECT_SPEC.md §4):
+ * - Light grey page background, white cards with subtle borders/rounded corners.
+ * - Strong navy headings, blue primary accent.
+ * - Green = positive, Red = negative/bugs, Orange = missing info/warnings,
+ *   Purple = MyCP / secondary comparison data.
+ * These color roles are validated by the Design lead across all five tabs
+ * (docs/OWNERSHIP_MATRIX.md).
+ */
+:root {
+  --cv-bg: #f2f4f7;
+  --cv-card-bg: #ffffff;
+  --cv-border: #e2e5ea;
+  --cv-navy: #172b4d;
+  --cv-text: #1f2937;
+  --cv-text-muted: #5b6474;
+
+  --cv-blue: #2563eb;
+  --cv-blue-bg: #e8effd;
+  --cv-blue-text: #1d4ed8;
+
+  --cv-green: #15803d;
+  --cv-green-bg: #e7f5ec;
+  --cv-green-text: #166534;
+
+  --cv-red: #b91c1c;
+  --cv-red-bg: #fbeaea;
+  --cv-red-text: #991b1b;
+
+  --cv-orange: #c2660a;
+  --cv-orange-bg: #fdf0e1;
+  --cv-orange-text: #9a4a08;
+
+  --cv-purple: #6d28d9;
+  --cv-purple-bg: #f0e9fb;
+  --cv-purple-text: #5b21b6;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--cv-bg);
+  color: var(--cv-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+}
+
+ul {
+  padding-left: 20px;
+}

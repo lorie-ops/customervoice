@@ -1,0 +1,40 @@
+.cv-tabnav {
+  background: var(--cv-card-bg);
+  border-bottom: 1px solid var(--cv-border);
+}
+
+.cv-tabnav__list {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0 20px;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.cv-tabnav__button {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cv-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cv-tabnav__button:hover {
+  color: var(--cv-navy);
+}
+
+.cv-tabnav__button:focus-visible {
+  outline: 2px solid var(--cv-blue);
+  outline-offset: 2px;
+}
+
+.cv-tabnav__button--active {
+  color: var(--cv-blue);
+  border-bottom-color: var(--cv-blue);
+}

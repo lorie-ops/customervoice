@@ -1,0 +1,30 @@
+.cv-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cv-app__content {
+  flex: 1;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .cv-app__content {
+    padding: 16px 12px 32px;
+  }
+}
+
+.topic-list {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--cv-text);
+}
+
+.topic-list li {
+  margin-bottom: 4px;
+}
