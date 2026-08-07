@@ -35,6 +35,14 @@ export function OverviewTab() {
 
   const weeklyWeb = useMemo(() => calculateWeeklyHotjarAverage(hotjarRows), []);
   const weeklyCrm = useMemo(() => calculateWeeklyCrmRates(crmRows), []);
+  const weeklyTrend = useMemo(() => {
+    const weeks = Array.from(new Set([...weeklyWeb.map((w) => w.week), ...weeklyCrm.map((w) => w.week)])).sort();
+    return weeks.map((week) => ({
+      week,
+      webAverage: weeklyWeb.find((w) => w.week === week)?.average ?? null,
+      crmPositiveRate: weeklyCrm.find((w) => w.week === week)?.positiveRate ?? null,
+    }));
+  }, [weeklyWeb, weeklyCrm]);
 
   const [periodAStart, setPeriodAStart] = useState(toInputDate(defaultPeriodAStart));
   const [periodAEnd, setPeriodAEnd] = useState(toInputDate(defaultPeriodAEnd));
@@ -86,46 +94,42 @@ export function OverviewTab() {
 
       <SectionPlaceholder
         title="Last Month Trends"
-        description="Weekly trend across the full fixture span. MyCP has no per-row dates in the validated baseline, so it stays a single static figure rather than a trend line."
+        description="Weekly trend across the full fixture span, Web and CRM on one chart (two scales, two axes - never blended into one number). MyCP has no per-row dates in the validated baseline, so it stays a single static figure rather than a trend line."
       >
-        <div className="trend-grid">
-          <div>
-            <p className="filter-note">Web (Hotjar) weekly average - 1 to 5 scale</p>
-            {weeklyWeb.length === 0 ? (
-              <EmptyState description="No Hotjar rows to trend." />
-            ) : (
-              <div style={{ width: '100%', height: 180 }}>
-                <ResponsiveContainer>
-                  <LineChart data={weeklyWeb}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--cv-border)" />
-                    <XAxis dataKey="week" fontSize={12} />
-                    <YAxis domain={[1, 5]} fontSize={12} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="average" name="Average (/5)" stroke="var(--cv-blue)" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
+        {weeklyTrend.length === 0 ? (
+          <EmptyState description="No Hotjar or CRM rows to trend." />
+        ) : (
+          <div style={{ width: '100%', height: 260 }}>
+            <ResponsiveContainer>
+              <LineChart data={weeklyTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--cv-border)" />
+                <XAxis dataKey="week" fontSize={12} />
+                <YAxis yAxisId="web" domain={[1, 5]} fontSize={12} stroke="var(--cv-blue)" label={{ value: 'Web / 5', angle: -90, position: 'insideLeft', fontSize: 11, fill: 'var(--cv-blue)' }} />
+                <YAxis yAxisId="crm" orientation="right" domain={[0, 100]} unit="%" fontSize={12} stroke="var(--cv-green)" label={{ value: 'CRM %', angle: 90, position: 'insideRight', fontSize: 11, fill: 'var(--cv-green)' }} />
+                <Tooltip />
+                <Legend />
+                <Line
+                  yAxisId="web"
+                  type="monotone"
+                  dataKey="webAverage"
+                  name="Web (Hotjar) average (/5)"
+                  stroke="var(--cv-blue)"
+                  strokeWidth={2}
+                  connectNulls
+                />
+                <Line
+                  yAxisId="crm"
+                  type="monotone"
+                  dataKey="crmPositiveRate"
+                  name="CRM positive rate (%)"
+                  stroke="var(--cv-green)"
+                  strokeWidth={2}
+                  connectNulls
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-          <div>
-            <p className="filter-note">CRM weekly positive rate - %</p>
-            {weeklyCrm.length === 0 ? (
-              <EmptyState description="No CRM rows to trend." />
-            ) : (
-              <div style={{ width: '100%', height: 180 }}>
-                <ResponsiveContainer>
-                  <LineChart data={weeklyCrm}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--cv-border)" />
-                    <XAxis dataKey="week" fontSize={12} />
-                    <YAxis domain={[0, 100]} unit="%" fontSize={12} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="positiveRate" name="Positive %" stroke="var(--cv-green)" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </SectionPlaceholder>
 
       <SectionPlaceholder
