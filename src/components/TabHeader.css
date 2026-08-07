@@ -7,6 +7,9 @@
   font-size: 22px;
   font-weight: 700;
   color: var(--cv-navy);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tab-header__owner {

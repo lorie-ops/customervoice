@@ -1,0 +1,26 @@
+{
+  "note": "SYNTHETIC illustrative layer on top of the validated DE/FR/NL theme set from theme_analysis_fixture.json (DATA_MODEL.md). marketImpactPct, csatImpact, confidence and exampleVerbatim are NOT validated - they exist only to populate the richer Theme Analysis table requested from the reference screenshots. Never add entries for BEFR/BENL/DK here - those stay 'To verify' per DATA_MODEL.md.",
+  "byMarket": {
+    "DE": {
+      "Payment and vouchers": { "marketImpactPct": -6.2, "csatImpact": "High", "confidence": "High", "exampleVerbatim": "The voucher code didn't apply at checkout, I had to call to fix it." },
+      "Add-ons": { "marketImpactPct": -1.5, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "Add-on pricing wasn't clear before I confirmed the booking." },
+      "Technical failures": { "marketImpactPct": -2.0, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "The site froze twice while I was trying to book activities." },
+      "Booking flow clarity": { "marketImpactPct": -3.1, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "It wasn't obvious which steps were still required to finish the booking." },
+      "Support quality": { "marketImpactPct": -1.0, "csatImpact": "Low", "confidence": "Low", "exampleVerbatim": "Support was slow to reply to my question about check-in." }
+    },
+    "FR": {
+      "Activity booking": { "marketImpactPct": -7.4, "csatImpact": "High", "confidence": "High", "exampleVerbatim": "I couldn't find available slots for the activities I wanted." },
+      "Navigation and filters": { "marketImpactPct": -2.8, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "The filters on the activity page didn't match what was actually available." },
+      "Payment and credits": { "marketImpactPct": -1.8, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "My loyalty credit wasn't applied automatically at checkout." },
+      "Pricing and discounts": { "marketImpactPct": -3.5, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "The discount code worked but the final price didn't reflect it right away." },
+      "Support follow-up": { "marketImpactPct": -0.9, "csatImpact": "Low", "confidence": "Low", "exampleVerbatim": "I never got a follow-up after my support request." }
+    },
+    "NL": {
+      "Add-ons": { "marketImpactPct": -2.6, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "Extra bedding wasn't listed as an add-on option during booking." },
+      "Payment options": { "marketImpactPct": -4.0, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "I would like more payment options at checkout, not just card." },
+      "Pricing": { "marketImpactPct": -1.6, "csatImpact": "Medium", "confidence": "Medium", "exampleVerbatim": "The total price changed slightly between search and checkout." },
+      "Customer service": { "marketImpactPct": -1.1, "csatImpact": "Low", "confidence": "Low", "exampleVerbatim": "Customer service took a while to answer the phone." },
+      "Site navigation": { "marketImpactPct": -0.8, "csatImpact": "Low", "confidence": "Low", "exampleVerbatim": "It took a while to find the cancellation policy page." }
+    }
+  }
+}

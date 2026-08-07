@@ -17,6 +17,7 @@ export function TabNav({ activeTab, onSelect }: TabNavProps) {
         {TAB_ORDER.map((tabId) => {
           const tab = TAB_OWNERSHIP[tabId];
           const isActive = tabId === activeTab;
+          const Icon = tab.icon;
           return (
             <li key={tabId} role="presentation">
               <button
@@ -29,6 +30,7 @@ export function TabNav({ activeTab, onSelect }: TabNavProps) {
                 onClick={() => onSelect(tabId)}
                 title={tab.ownerTooltip}
               >
+                <Icon size={15} aria-hidden="true" />
                 {tab.label}
               </button>
             </li>

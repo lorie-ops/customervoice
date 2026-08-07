@@ -14,9 +14,13 @@ type TabHeaderProps = {
  */
 export function TabHeader({ tabId }: TabHeaderProps) {
   const tab = TAB_OWNERSHIP[tabId];
+  const Icon = tab.icon;
   return (
     <div className="tab-header">
-      <h1 className="tab-header__title">{tab.label}</h1>
+      <h1 className="tab-header__title">
+        <Icon size={22} aria-hidden="true" />
+        {tab.label}
+      </h1>
       <p className="tab-header__owner" title={tab.ownerTooltip}>
         <Info size={14} aria-hidden="true" />
         {tab.ownerSubtitle}

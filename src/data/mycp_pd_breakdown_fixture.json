@@ -1,0 +1,12 @@
+{
+  "note": "SYNTHETIC illustrative breakdown. Only responses, average, and NPS are validated per market (CLAUDE.md / DATA_MODEL.md). Individual promoter/passive/detractor percentages are NOT validated - NPS = %promoters - %detractors is underdetermined for a single split, so this file picks one plausible split per market that reproduces the validated NPS exactly, purely to render the Promoters/Passives/Detractors distribution chart requested from the reference screenshots. Do not present these percentages as validated data.",
+  "byMarket": {
+    "global": { "promoterPct": 70.0, "passivePct": 20.0, "detractorPct": 10.0 },
+    "DK": { "promoterPct": 53.9, "passivePct": 31.1, "detractorPct": 15.0 },
+    "BEFR": { "promoterPct": 75.9, "passivePct": 16.1, "detractorPct": 8.0 },
+    "BENL": { "promoterPct": 69.1, "passivePct": 18.9, "detractorPct": 12.0 },
+    "NL": { "promoterPct": 72.9, "passivePct": 17.1, "detractorPct": 10.0 },
+    "FR": { "promoterPct": 72.1, "passivePct": 16.9, "detractorPct": 11.0 },
+    "DE": { "promoterPct": 69.6, "passivePct": 18.4, "detractorPct": 12.0 }
+  }
+}

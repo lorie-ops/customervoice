@@ -1,0 +1,20 @@
+{
+  "note": "SYNTHETIC starter content. The Action Plan is CRM-lead-maintained (docs/OWNERSHIP_MATRIX.md) - these are illustrative placeholder actions to demonstrate the layout, not real decisions. The CRM project lead should replace this list.",
+  "items": [
+    {
+      "priority": "P1",
+      "title": "Standardize the cancellation-policy explanation across agents",
+      "detail": "Confusing cancellation policy is the most repeated negative signal across markets - align the phone-support script with the webform copy."
+    },
+    {
+      "priority": "P1",
+      "title": "Fix voucher application at checkout",
+      "detail": "Multiple negative signals report voucher codes not applying automatically, requiring a support call."
+    },
+    {
+      "priority": "P2",
+      "title": "Reduce refund callback delay",
+      "detail": "Several markets report waiting multiple days for a refund callback - review the manual refund queue."
+    }
+  ]
+}

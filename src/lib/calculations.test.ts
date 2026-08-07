@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCrmRates, calculateHotjarAverage, calculateMyCpNps, getMyCpBucket } from './calculations';
+import {
+  calculateCrmRates,
+  calculateHotjarAverage,
+  calculateMyCpNps,
+  calculateWeeklyCrmRates,
+  calculateWeeklyHotjarAverage,
+  countHotjarByCategory,
+  getMyCpBucket,
+  mostFrequentNegativeText,
+} from './calculations';
+import type { CRMRow, HotjarRow } from '../types';
 
 describe('getMyCpBucket', () => {
   it('classifies 9 and 10 as promoters', () => {
@@ -73,5 +83,65 @@ describe('calculateCrmRates', () => {
     expect(rates.positiveRate).toBe(50);
     expect(rates.negativeRate).toBe(25);
     expect(rates.neutralRate).toBe(25);
+  });
+});
+
+describe('calculateWeeklyCrmRates', () => {
+  it('groups rows by ISO week and computes each week independently', () => {
+    const rows: CRMRow[] = [
+      { id: '1', date: '2026-04-01', market: 'FR', sentiment: 'positive' },
+      { id: '2', date: '2026-04-02', market: 'FR', sentiment: 'negative' },
+      { id: '3', date: '2026-04-15', market: 'FR', sentiment: 'positive' },
+    ];
+    const weekly = calculateWeeklyCrmRates(rows);
+    expect(weekly.length).toBe(2);
+    expect(weekly[0].total).toBe(2);
+    expect(weekly[1].total).toBe(1);
+  });
+});
+
+describe('mostFrequentNegativeText', () => {
+  it('returns null when there are no negative comments', () => {
+    const rows: CRMRow[] = [{ id: '1', date: '2026-04-01', market: 'FR', sentiment: 'positive' }];
+    expect(mostFrequentNegativeText(rows)).toBeNull();
+  });
+
+  it('returns the most repeated negative comment', () => {
+    const rows: CRMRow[] = [
+      { id: '1', date: '2026-04-01', market: 'FR', sentiment: 'negative', negativeText: 'A' },
+      { id: '2', date: '2026-04-02', market: 'FR', sentiment: 'negative', negativeText: 'B' },
+      { id: '3', date: '2026-04-03', market: 'FR', sentiment: 'negative', negativeText: 'A' },
+    ];
+    expect(mostFrequentNegativeText(rows)).toBe('A');
+  });
+});
+
+describe('calculateWeeklyHotjarAverage', () => {
+  it('groups by ISO week and excludes unanswered scores per week', () => {
+    const rows: HotjarRow[] = [
+      { id: '1', date: '2026-04-01', country: 'FR', message: 'a', scope: 'Web', score: 4 },
+      { id: '2', date: '2026-04-02', country: 'FR', message: 'b', scope: 'Web', score: null },
+      { id: '3', date: '2026-04-15', country: 'FR', message: 'c', scope: 'Web', score: 2 },
+    ];
+    const weekly = calculateWeeklyHotjarAverage(rows);
+    expect(weekly.length).toBe(2);
+    expect(weekly[0].average).toBe(4);
+    expect(weekly[0].scoredCount).toBe(1);
+  });
+});
+
+describe('countHotjarByCategory', () => {
+  it('counts categories within the date range, sorted descending', () => {
+    const rows: HotjarRow[] = [
+      { id: '1', date: '2026-04-01', country: 'FR', message: 'a', scope: 'Web', category: 'Payment / Price' },
+      { id: '2', date: '2026-04-02', country: 'FR', message: 'b', scope: 'Web', category: 'Payment / Price' },
+      { id: '3', date: '2026-04-03', country: 'FR', message: 'c', scope: 'Web', category: 'Other' },
+      { id: '4', date: '2026-05-01', country: 'FR', message: 'd', scope: 'Web', category: 'Payment / Price' },
+    ];
+    const counts = countHotjarByCategory(rows, '2026-04-01', '2026-04-30');
+    expect(counts).toEqual([
+      { category: 'Payment / Price', count: 2 },
+      { category: 'Other', count: 1 },
+    ]);
   });
 });

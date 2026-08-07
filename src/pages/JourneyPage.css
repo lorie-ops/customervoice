@@ -1,0 +1,142 @@
+.journey-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.journey-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.journey-page__header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cv-navy);
+}
+
+.journey-page__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cv-blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.journey-page__cta:hover {
+  background: var(--cv-blue-text);
+}
+
+.journey-page__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.source-badge--available { background: var(--cv-green-bg); color: var(--cv-green-text); }
+.source-badge--planned { background: var(--cv-border); color: var(--cv-text-muted); }
+
+.journey-page__stages {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 16px;
+}
+
+.journey-stage-button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--cv-border);
+  background: var(--cv-card-bg);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--cv-text-muted);
+}
+
+.journey-stage-button--active.journey-stage-button--before { border-color: var(--cv-blue); color: var(--cv-blue-text); background: var(--cv-blue-bg); }
+.journey-stage-button--active.journey-stage-button--during { border-color: var(--cv-orange); color: var(--cv-orange-text); background: var(--cv-orange-bg); }
+.journey-stage-button--active.journey-stage-button--after { border-color: var(--cv-green); color: var(--cv-green-text); background: var(--cv-green-bg); }
+
+.journey-page__touchpoints {
+  margin-top: 24px;
+}
+
+.journey-page__touchpoints h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--cv-navy);
+  margin: 0 0 4px;
+}
+
+.touchpoint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.touchpoint-card {
+  border: 1px solid var(--cv-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--cv-card-bg);
+}
+
+.touchpoint-card__title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--cv-navy);
+  font-size: 14px;
+}
+
+.touchpoint-card__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.journey-page__legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.journey-page__legend-item {
+  border: 1px solid var(--cv-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--cv-card-bg);
+}
+
+.journey-page__legend-item p:first-child {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cv-navy);
+}

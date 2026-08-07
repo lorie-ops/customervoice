@@ -1,7 +1,12 @@
+import { Route } from 'lucide-react';
 import './Header.css';
 import { crmRows, hotjarRows } from '../lib/fixtures';
 import { MYCP_BASELINE_APRIL_2026 } from '../lib/mycpBaseline';
 import { formatDate, formatNumber } from '../lib/format';
+
+type HeaderProps = {
+  onBackToJourney: () => void;
+};
 
 /**
  * Global header: brand mark, title, and a subtitle with Hotjar volume,
@@ -9,7 +14,7 @@ import { formatDate, formatNumber } from '../lib/format';
  * date (docs/PROJECT_SPEC.md). MyCP volume comes from the validated
  * static baseline, never from a fixture.
  */
-export function Header() {
+export function Header({ onBackToJourney }: HeaderProps) {
   const hotjarVolume = hotjarRows.length;
   const crmVolume = crmRows.length;
   const mycpVolume = MYCP_BASELINE_APRIL_2026.global.responses;
@@ -19,9 +24,15 @@ export function Header() {
   return (
     <header className="cv-header">
       <div className="cv-header__brand">
-        <span className="cv-header__mark" aria-hidden="true">
-          CV
-        </span>
+        <button
+          type="button"
+          className="cv-header__mark"
+          onClick={onBackToJourney}
+          title="Back to Customer Voice Journey"
+          aria-label="Back to Customer Voice Journey"
+        >
+          <Route size={18} aria-hidden="true" />
+        </button>
         <div>
           <h1 className="cv-header__title">Customer Voice Dashboard</h1>
           <p className="cv-header__subtitle">

@@ -1,0 +1,21 @@
+{
+  "note": "SYNTHETIC illustrative touchpoint structure for the Customer Journey entry page. This taxonomy (touchpoints, objectives, and per-touchpoint source relevance) is not in DATA_MODEL.md and needs Marketing/Product validation before being treated as authoritative. No metrics are attached here - only structure. Source availability itself (Live/Planned) is computed in code from real integration status, not from this file.",
+  "byStage": {
+    "before": [
+      { "touchpoint": "Search and booking", "objective": "Frictionless decision", "sources": ["hotjar", "crm"] },
+      { "touchpoint": "Payment and confirmation", "objective": "Trust at checkout", "sources": ["hotjar", "crm"] }
+    ],
+    "during": [
+      { "touchpoint": "Check-in", "objective": "First impression", "sources": ["hotjar", "medallia"] },
+      { "touchpoint": "Accommodation (cottage)", "objective": "Core satisfaction", "sources": ["hotjar", "medallia", "mycp"] },
+      { "touchpoint": "Aquamundo", "objective": "Premium experience", "sources": ["medallia", "mycp"] },
+      { "touchpoint": "Catering and dining", "objective": "F&B satisfaction", "sources": ["medallia", "mycp"] },
+      { "touchpoint": "Leisure and activities", "objective": "Entertainment", "sources": ["hotjar", "medallia", "mycp"] },
+      { "touchpoint": "Staff and service", "objective": "Guest relationship", "sources": ["medallia", "crm"] }
+    ],
+    "after": [
+      { "touchpoint": "Post-stay survey", "objective": "Satisfaction capture", "sources": ["mycp", "medallia"] },
+      { "touchpoint": "Follow-up and refunds", "objective": "Issue resolution", "sources": ["crm"] }
+    ]
+  }
+}

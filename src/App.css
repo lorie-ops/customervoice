@@ -153,3 +153,194 @@
   color: var(--cv-text-muted);
   text-transform: capitalize;
 }
+
+.signal-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.signal-list li {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border-left: 3px solid var(--cv-border);
+}
+
+.signal-list--positive li { border-left-color: var(--cv-green); background: var(--cv-green-bg); }
+.signal-list--negative li { border-left-color: var(--cv-red); background: var(--cv-red-bg); }
+
+.signal-list__date {
+  color: var(--cv-text-muted);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.action-plan-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-plan-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.action-plan-item__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--cv-navy);
+}
+
+.action-plan-item__detail {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--cv-text-muted);
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.priority-badge--p1 { background: var(--cv-red); }
+.priority-badge--p2 { background: var(--cv-orange); }
+
+.issue-card,
+.topic-card {
+  border-left: 3px solid var(--cv-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: var(--cv-card-bg);
+  border: 1px solid var(--cv-border);
+}
+
+.issue-card { border-left-color: var(--cv-red); }
+.topic-card { border-left-color: var(--cv-orange); }
+
+.issue-card__header,
+.topic-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.issue-card__title,
+.topic-card__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--cv-navy);
+}
+
+.count-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.count-badge--red { background: var(--cv-red); color: #fff; }
+.count-badge--orange { background: var(--cv-orange); color: #fff; }
+
+.issue-card__quote,
+.topic-card__quote {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--cv-text-muted);
+}
+
+.issue-card__action,
+.topic-card__recommendation {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.issue-card__action { background: var(--cv-red-bg); color: var(--cv-red-text); }
+.topic-card__recommendation { background: var(--cv-orange-bg); color: var(--cv-orange-text); }
+
+.data-table__row--selected {
+  background: var(--cv-blue-bg);
+}
+
+.impact-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.impact-tag--low { background: var(--cv-border); color: var(--cv-text-muted); }
+.impact-tag--medium { background: var(--cv-orange-bg); color: var(--cv-orange-text); }
+.impact-tag--high { background: var(--cv-red-bg); color: var(--cv-red-text); }
+
+.report-slide {
+  border-radius: 10px;
+  border: 1px solid var(--cv-border);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.report-slide__header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--cv-navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.report-slide__body {
+  padding: 14px;
+  background: var(--cv-orange-bg);
+}
+
+.report-slide__nps {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--cv-navy);
+}
+
+.trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.category-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.movement--up { color: var(--cv-red-text); font-weight: 600; }
+.movement--down { color: var(--cv-green-text); font-weight: 600; }

@@ -26,3 +26,10 @@ export const MYCP_APRIL_2025_NPS_COMPARISON: Partial<Record<Market, number>> = {
   BEFR: 73.7,
   BENL: 52.1,
 };
+
+/**
+ * SYNTHETIC illustrative example target, not a validated OKR - shown on
+ * the Monthly Report slide to demonstrate the layout. Marketing should
+ * confirm the real committed target before this is treated as real.
+ */
+export const MYCP_NPS_TARGET_OKR_EXAMPLE = 65;

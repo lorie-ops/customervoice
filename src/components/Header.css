@@ -19,9 +19,13 @@
   border-radius: 10px;
   background: var(--cv-navy);
   color: #fff;
-  font-weight: 700;
-  font-size: 14px;
+  border: none;
+  cursor: pointer;
   flex-shrink: 0;
+}
+
+.cv-header__mark:hover {
+  background: var(--cv-blue);
 }
 
 .cv-header__title {

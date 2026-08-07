@@ -23,6 +23,9 @@
   color: var(--cv-text-muted);
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cv-tabnav__button:hover {
