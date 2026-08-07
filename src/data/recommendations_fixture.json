@@ -1,0 +1,40 @@
+{
+  "note": "Top 5 Recommendations fixture for the Overview tab. owner_role maps directly to the Ownership Matrix.",
+  "recommendations": [
+    {
+      "priority": 1,
+      "title": "Fix payment page card validation errors",
+      "owner_role": "Product",
+      "impacted_stage": "before",
+      "evidence": "Top recurring Hotjar + CRM theme across DE, NL, FR"
+    },
+    {
+      "priority": 2,
+      "title": "Clarify cancellation policy copy across markets",
+      "owner_role": "CRM",
+      "impacted_stage": "before",
+      "evidence": "Repeated CRM negative signals and Hotjar missing-info tags"
+    },
+    {
+      "priority": 3,
+      "title": "Improve activity booking availability display",
+      "owner_role": "Product",
+      "impacted_stage": "during",
+      "evidence": "High-frequency Hotjar theme in FR and BENL"
+    },
+    {
+      "priority": 4,
+      "title": "Reduce refund follow-up delay",
+      "owner_role": "CRM",
+      "impacted_stage": "after",
+      "evidence": "CRM negative signals, root cause: manual refund queue"
+    },
+    {
+      "priority": 5,
+      "title": "Standardize voucher application flow",
+      "owner_role": "Marketing",
+      "impacted_stage": "before",
+      "evidence": "Cross-market CRM negative signal on campaign vouchers"
+    }
+  ]
+}

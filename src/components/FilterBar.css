@@ -1,0 +1,37 @@
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.filter-field__label {
+  font-weight: 600;
+  color: var(--cv-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.filter-field select,
+.filter-field input {
+  border: 1px solid var(--cv-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: var(--cv-card-bg);
+  color: var(--cv-text);
+  min-width: 140px;
+}
+
+.filter-field select:focus-visible,
+.filter-field input:focus-visible {
+  outline: 2px solid var(--cv-blue);
+  outline-offset: 1px;
+}

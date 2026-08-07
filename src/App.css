@@ -28,3 +28,128 @@
 .topic-list li {
   margin-bottom: 4px;
 }
+
+/* Shared layout utilities used across tabs (Phase 1) */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--cv-border);
+  white-space: nowrap;
+}
+
+.data-table td:last-child {
+  white-space: normal;
+}
+
+.data-table th {
+  color: var(--cv-text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.sentiment-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sentiment-tag--positive { background: var(--cv-green-bg); color: var(--cv-green-text); }
+.sentiment-tag--negative { background: var(--cv-red-bg); color: var(--cv-red-text); }
+.sentiment-tag--neutral { background: var(--cv-border); color: var(--cv-text-muted); }
+
+.filter-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--cv-text-muted);
+}
+
+.recommendation-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recommendation-card {
+  border: 1px solid var(--cv-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.recommendation-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recommendation-card__priority {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cv-navy);
+}
+
+.recommendation-card__title {
+  margin: 6px 0 2px;
+  font-weight: 600;
+  color: var(--cv-navy);
+  font-size: 14px;
+}
+
+.recommendation-card__evidence {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cv-text-muted);
+}
+
+.owner-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.owner-tag--crm { background: var(--cv-blue-bg); color: var(--cv-blue-text); }
+.owner-tag--product { background: var(--cv-green-bg); color: var(--cv-green-text); }
+.owner-tag--marketing { background: var(--cv-orange-bg); color: var(--cv-orange-text); }
+.owner-tag--design { background: var(--cv-purple-bg); color: var(--cv-purple-text); }
+
+.stage-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--cv-border);
+  color: var(--cv-text-muted);
+  text-transform: capitalize;
+}

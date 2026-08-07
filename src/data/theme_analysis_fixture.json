@@ -1,0 +1,107 @@
+{
+  "note": "DE/FR/NL themes are the validated set from DATA_MODEL.md. BEFR/BENL/DK marked 'To verify' pending real data - do not invent numbers for them.",
+  "byMarket": {
+    "DE": [
+      {
+        "theme": "Payment and vouchers",
+        "mentions": 142,
+        "trend": "up"
+      },
+      {
+        "theme": "Add-ons",
+        "mentions": 98,
+        "trend": "flat"
+      },
+      {
+        "theme": "Technical failures",
+        "mentions": 87,
+        "trend": "down"
+      },
+      {
+        "theme": "Booking flow clarity",
+        "mentions": 64,
+        "trend": "up"
+      },
+      {
+        "theme": "Support quality",
+        "mentions": 51,
+        "trend": "flat"
+      }
+    ],
+    "FR": [
+      {
+        "theme": "Activity booking",
+        "mentions": 176,
+        "trend": "up"
+      },
+      {
+        "theme": "Navigation and filters",
+        "mentions": 121,
+        "trend": "flat"
+      },
+      {
+        "theme": "Payment and credits",
+        "mentions": 95,
+        "trend": "down"
+      },
+      {
+        "theme": "Pricing and discounts",
+        "mentions": 88,
+        "trend": "up"
+      },
+      {
+        "theme": "Support follow-up",
+        "mentions": 47,
+        "trend": "flat"
+      }
+    ],
+    "NL": [
+      {
+        "theme": "Add-ons",
+        "mentions": 133,
+        "trend": "flat"
+      },
+      {
+        "theme": "Payment options",
+        "mentions": 110,
+        "trend": "up"
+      },
+      {
+        "theme": "Pricing",
+        "mentions": 92,
+        "trend": "down"
+      },
+      {
+        "theme": "Customer service",
+        "mentions": 58,
+        "trend": "flat"
+      },
+      {
+        "theme": "Site navigation",
+        "mentions": 45,
+        "trend": "up"
+      }
+    ],
+    "BEFR": [
+      {
+        "theme": "To verify",
+        "mentions": null,
+        "trend": "Unknown"
+      }
+    ],
+    "BENL": [
+      {
+        "theme": "To verify",
+        "mentions": null,
+        "trend": "Unknown"
+      }
+    ],
+    "DK": [
+      {
+        "theme": "To verify",
+        "mentions": null,
+        "trend": "Unknown"
+      }
+    ]
+  }
+}

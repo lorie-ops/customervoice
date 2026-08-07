@@ -1,0 +1,965 @@
+{
+  "note": "SYNTHETIC fixture for prototyping only. Matches HotjarRow type in DATA_MODEL.md. Replace with real Hotjar export in Phase 6.",
+  "rows": [
+    {
+      "id": "HJ-0001",
+      "date": "2026-04-08",
+      "country": "NL",
+      "device": "tablet",
+      "score": 2,
+      "message": "Price changed between search and checkout.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0002",
+      "date": "2026-04-01",
+      "country": "FR",
+      "device": "desktop",
+      "score": 1,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0003",
+      "date": "2026-04-07",
+      "country": "DK",
+      "device": "tablet",
+      "score": null,
+      "message": "Great experience booking this time.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0004",
+      "date": "2026-04-09",
+      "country": "FR",
+      "device": "desktop",
+      "score": 5,
+      "message": "Nice and clean design, easy to use on mobile.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0005",
+      "date": "2026-04-25",
+      "country": "DE",
+      "device": "desktop",
+      "score": 2,
+      "message": "Could not reach anyone by phone before booking.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0006",
+      "date": "2026-04-20",
+      "country": "DE",
+      "device": "desktop",
+      "score": 3,
+      "message": "Chat support took too long to respond.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0007",
+      "date": "2026-04-03",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 4,
+      "message": "Two-factor code never received by SMS.",
+      "tags": [
+        "account"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Account / Login",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0008",
+      "date": "2026-04-02",
+      "country": "DK",
+      "device": "desktop",
+      "score": 1,
+      "message": "Aquamundo hours not visible on the activity page.",
+      "tags": [
+        "activities"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Activities & Leisure",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0009",
+      "date": "2026-04-09",
+      "country": "BEFR",
+      "device": "tablet",
+      "score": 4,
+      "message": "Price changed between search and checkout.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0010",
+      "date": "2026-04-23",
+      "country": "DK",
+      "device": "tablet",
+      "score": 3,
+      "message": "Not clear if the cottage has a dishwasher.",
+      "tags": [
+        "cottage"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Cottage & Equipment",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0011",
+      "date": "2026-04-15",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": 2,
+      "message": "Equipment list is outdated on the listing page.",
+      "tags": [
+        "cottage"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Cottage & Equipment",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0012",
+      "date": "2026-04-08",
+      "country": "FR",
+      "device": "mobile",
+      "score": 1,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0013",
+      "date": "2026-04-29",
+      "country": "DK",
+      "device": "mobile",
+      "score": 5,
+      "message": "Could not find check-in time anywhere.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0014",
+      "date": "2026-04-05",
+      "country": "DE",
+      "device": "desktop",
+      "score": 4,
+      "message": "Account page does not show past bookings.",
+      "tags": [
+        "account"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Account / Login",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0015",
+      "date": "2026-04-14",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 5,
+      "message": "Great experience booking this time.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0016",
+      "date": "2026-04-25",
+      "country": "FR",
+      "device": "desktop",
+      "score": 1,
+      "message": "Page crashed when I clicked on activities tab.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0017",
+      "date": "2026-04-13",
+      "country": "BEFR",
+      "device": "tablet",
+      "score": 1,
+      "message": "Equipment list is outdated on the listing page.",
+      "tags": [
+        "cottage"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Cottage & Equipment",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0018",
+      "date": "2026-04-22",
+      "country": "DK",
+      "device": "desktop",
+      "score": 1,
+      "message": "Nice and clean design, easy to use on mobile.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0019",
+      "date": "2026-04-04",
+      "country": "DE",
+      "device": "mobile",
+      "score": 3,
+      "message": "Nice and clean design, easy to use on mobile.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0020",
+      "date": "2026-04-17",
+      "country": "NL",
+      "device": "tablet",
+      "score": 3,
+      "message": "Password reset link expired immediately.",
+      "tags": [
+        "account"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Account / Login",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0021",
+      "date": "2026-04-05",
+      "country": "DE",
+      "device": "desktop",
+      "score": 2,
+      "message": "Cancellation policy is hard to find.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0022",
+      "date": "2026-04-01",
+      "country": "FR",
+      "device": "mobile",
+      "score": 4,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0023",
+      "date": "2026-04-03",
+      "country": "FR",
+      "device": "tablet",
+      "score": 5,
+      "message": "Page crashed when I clicked on activities tab.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0024",
+      "date": "2026-04-22",
+      "country": "BEFR",
+      "device": "tablet",
+      "score": 2,
+      "message": "No clear breakdown of extra fees before payment.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0025",
+      "date": "2026-04-07",
+      "country": "BENL",
+      "device": "tablet",
+      "score": 4,
+      "message": "Cancellation policy is hard to find.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0026",
+      "date": "2026-04-15",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 3,
+      "message": "Site is very slow on mobile during checkout.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0027",
+      "date": "2026-04-01",
+      "country": "BENL",
+      "device": "tablet",
+      "score": null,
+      "message": "Page crashed when I clicked on activities tab.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0028",
+      "date": "2026-04-21",
+      "country": "FR",
+      "device": "desktop",
+      "score": null,
+      "message": "Page crashed when I clicked on activities tab.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0029",
+      "date": "2026-04-08",
+      "country": "DE",
+      "device": "tablet",
+      "score": null,
+      "message": "Hard to find available cottages for my dates.",
+      "tags": [
+        "reservation"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": "https://www.centerparcs.fr/booking",
+      "category": "Reservation / Booking",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0030",
+      "date": "2026-04-19",
+      "country": "BEFR",
+      "device": "desktop",
+      "score": 5,
+      "message": "Site is very slow on mobile during checkout.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0031",
+      "date": "2026-04-22",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": null,
+      "message": "Chat support took too long to respond.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0032",
+      "date": "2026-04-22",
+      "country": "DK",
+      "device": "tablet",
+      "score": 1,
+      "message": "Could not reach anyone by phone before booking.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0033",
+      "date": "2026-04-08",
+      "country": "NL",
+      "device": "desktop",
+      "score": 1,
+      "message": "Hard to find available cottages for my dates.",
+      "tags": [
+        "reservation"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": "https://www.centerparcs.fr/booking",
+      "category": "Reservation / Booking",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0034",
+      "date": "2026-04-15",
+      "country": "NL",
+      "device": "desktop",
+      "score": 3,
+      "message": "Password reset link expired immediately.",
+      "tags": [
+        "account"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Account / Login",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0035",
+      "date": "2026-04-18",
+      "country": "FR",
+      "device": "desktop",
+      "score": null,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0036",
+      "date": "2026-04-28",
+      "country": "BEFR",
+      "device": "desktop",
+      "score": 2,
+      "message": "Not clear if the cottage has a dishwasher.",
+      "tags": [
+        "cottage"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Cottage & Equipment",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0037",
+      "date": "2026-04-30",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": 3,
+      "message": "Chat support took too long to respond.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0038",
+      "date": "2026-04-07",
+      "country": "DE",
+      "device": "desktop",
+      "score": 2,
+      "message": "Great experience booking this time.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0039",
+      "date": "2026-04-02",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 1,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0040",
+      "date": "2026-04-17",
+      "country": "FR",
+      "device": "desktop",
+      "score": null,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0041",
+      "date": "2026-04-04",
+      "country": "BENL",
+      "device": "desktop",
+      "score": 4,
+      "message": "No clear breakdown of extra fees before payment.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0042",
+      "date": "2026-04-22",
+      "country": "BENL",
+      "device": "tablet",
+      "score": null,
+      "message": "Booking confirmation email never arrived.",
+      "tags": [
+        "reservation"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": "https://www.centerparcs.fr/booking",
+      "category": "Reservation / Booking",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0043",
+      "date": "2026-04-08",
+      "country": "DE",
+      "device": "mobile",
+      "score": 3,
+      "message": "Would like filters for kid-friendly activities.",
+      "tags": [
+        "activities"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Activities & Leisure",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0044",
+      "date": "2026-04-01",
+      "country": "BEFR",
+      "device": "tablet",
+      "score": 1,
+      "message": "No info on pet policy for this park.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0045",
+      "date": "2026-04-09",
+      "country": "NL",
+      "device": "mobile",
+      "score": 5,
+      "message": "Price changed between search and checkout.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0046",
+      "date": "2026-04-27",
+      "country": "BENL",
+      "device": "tablet",
+      "score": 4,
+      "message": "Login button does nothing on Safari.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0047",
+      "date": "2026-04-10",
+      "country": "DK",
+      "device": "desktop",
+      "score": 5,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0048",
+      "date": "2026-04-05",
+      "country": "DE",
+      "device": "mobile",
+      "score": 5,
+      "message": "Could not find check-in time anywhere.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0049",
+      "date": "2026-04-17",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": 3,
+      "message": "Site is very slow on mobile during checkout.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0050",
+      "date": "2026-04-02",
+      "country": "FR",
+      "device": "mobile",
+      "score": 3,
+      "message": "No clear breakdown of extra fees before payment.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0051",
+      "date": "2026-04-23",
+      "country": "BEFR",
+      "device": "tablet",
+      "score": 5,
+      "message": "Could not find check-in time anywhere.",
+      "tags": [
+        "missing"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Missing Information",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0052",
+      "date": "2026-04-18",
+      "country": "FR",
+      "device": "mobile",
+      "score": 2,
+      "message": "Price changed between search and checkout.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0053",
+      "date": "2026-04-10",
+      "country": "DE",
+      "device": "desktop",
+      "score": 1,
+      "message": "Overall the site looks great, easy to navigate.",
+      "tags": [
+        "other"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Other",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0054",
+      "date": "2026-04-12",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 1,
+      "message": "Site is very slow on mobile during checkout.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "feedback-widget",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0055",
+      "date": "2026-04-29",
+      "country": "BEFR",
+      "device": "desktop",
+      "score": 2,
+      "message": "Would like more photos of the actual cottage interior.",
+      "tags": [
+        "cottage"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Cottage & Equipment",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0056",
+      "date": "2026-04-09",
+      "country": "NL",
+      "device": "tablet",
+      "score": 2,
+      "message": "Would like filters for kid-friendly activities.",
+      "tags": [
+        "activities"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": null,
+      "category": "Activities & Leisure",
+      "journeyStage": "during"
+    },
+    {
+      "id": "HJ-0057",
+      "date": "2026-04-07",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": 2,
+      "message": "Chat support took too long to respond.",
+      "tags": [
+        "customer"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Customer Service",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0058",
+      "date": "2026-04-07",
+      "country": "BEFR",
+      "device": "mobile",
+      "score": null,
+      "message": "Page crashed when I clicked on activities tab.",
+      "tags": [
+        "bug"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Bug / Technical Error",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0059",
+      "date": "2026-04-13",
+      "country": "DK",
+      "device": "tablet",
+      "score": 5,
+      "message": "Payment page rejected my card twice before it worked.",
+      "tags": [
+        "payment"
+      ],
+      "scope": "Web",
+      "surveyType": "nps-web",
+      "sourceUrl": null,
+      "category": "Payment / Price",
+      "journeyStage": "before"
+    },
+    {
+      "id": "HJ-0060",
+      "date": "2026-04-06",
+      "country": "BENL",
+      "device": "mobile",
+      "score": 3,
+      "message": "The booking calendar froze when I tried to select dates.",
+      "tags": [
+        "reservation"
+      ],
+      "scope": "Web",
+      "surveyType": "exit-survey",
+      "sourceUrl": "https://www.centerparcs.fr/booking",
+      "category": "Reservation / Booking",
+      "journeyStage": "before"
+    }
+  ]
+}
