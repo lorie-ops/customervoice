@@ -5,7 +5,9 @@
 /* Hero band */
 
 .journey-hero {
-  background: linear-gradient(135deg, var(--cv-navy) 0%, #24406e 55%, var(--cv-blue) 100%);
+  /* Flat forest green, matching the real centerparcs.fr navbar (no
+     gradient) - see the reference screenshots and index.css. */
+  background: var(--cv-navy);
   color: #fff;
   padding: 36px 20px 28px;
 }
@@ -43,11 +45,12 @@
 }
 
 .journey-page__cta {
+  /* Matches the site's own "Rechercher" button - vivid pink CTA. */
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #fff;
-  color: var(--cv-navy);
+  background: var(--cv-blue);
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
@@ -58,7 +61,7 @@
 }
 
 .journey-page__cta:hover {
-  background: var(--cv-blue-bg);
+  background: var(--cv-blue-text);
 }
 
 /* Stepper */

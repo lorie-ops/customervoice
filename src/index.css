@@ -1,23 +1,33 @@
 /*
- * Visual rules (docs/PROJECT_SPEC.md §4):
- * - Light grey page background, white cards with subtle borders/rounded corners.
- * - Strong navy headings, blue primary accent.
- * - Green = positive, Red = negative/bugs, Orange = missing info/warnings,
- *   Purple = MyCP / secondary comparison data.
- * These color roles are validated by the Design lead across all five tabs
- * (docs/OWNERSHIP_MATRIX.md).
+ * Visual rules (docs/PROJECT_SPEC.md §4), re-themed toward Center Parcs'
+ * real brand identity - based on screenshots of centerparcs.fr the user
+ * provided (this session's network policy blocks reaching the live site
+ * directly, so these hex values are read off those screenshots, not an
+ * official brand sheet - close, but worth a final check against real
+ * brand assets).
+ *
+ * - Deep flat forest green for chrome (header/nav bar, headings, hero) -
+ *   matches the site's solid green navbar (no gradient).
+ * - A vivid magenta/pink for the primary interactive accent - the site's
+ *   actual "Rechercher" CTA button color, not blue. Kept as the --cv-blue
+ *   token to avoid renaming every usage; it is a magenta, not a blue.
+ * - --cv-green = positive, --cv-red = negative/bugs, --cv-orange = missing
+ *   info/warnings, --cv-purple = MyCP. These four are validated by the
+ *   Design lead across all five tabs (docs/OWNERSHIP_MATRIX.md) and were
+ *   deliberately left alone - keeping forest green out of this list too
+ *   avoids it colliding with "positive green".
  */
 :root {
-  --cv-bg: #f2f4f7;
+  --cv-bg: #f7f5f0;
   --cv-card-bg: #ffffff;
-  --cv-border: #e2e5ea;
-  --cv-navy: #172b4d;
-  --cv-text: #1f2937;
-  --cv-text-muted: #5b6474;
+  --cv-border: #dde3da;
+  --cv-navy: #0f4c3a;
+  --cv-text: #21261f;
+  --cv-text-muted: #5c6459;
 
-  --cv-blue: #2563eb;
-  --cv-blue-bg: #e8effd;
-  --cv-blue-text: #1d4ed8;
+  --cv-blue: #e2007a;
+  --cv-blue-bg: #fce4f0;
+  --cv-blue-text: #b8005f;
 
   --cv-green: #15803d;
   --cv-green-bg: #e7f5ec;

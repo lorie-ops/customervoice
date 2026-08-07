@@ -1,4 +1,4 @@
-import { Route } from 'lucide-react';
+import { TreePine } from 'lucide-react';
 import './Header.css';
 import { crmRows, hotjarRows } from '../lib/fixtures';
 import { MYCP_BASELINE_APRIL_2026 } from '../lib/mycpBaseline';
@@ -31,7 +31,7 @@ export function Header({ onBackToJourney }: HeaderProps) {
           title="Back to Customer Voice Journey"
           aria-label="Back to Customer Voice Journey"
         >
-          <Route size={18} aria-hidden="true" />
+          <TreePine size={18} aria-hidden="true" />
         </button>
         <div>
           <h1 className="cv-header__title">Customer Voice Dashboard</h1>
