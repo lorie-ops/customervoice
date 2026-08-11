@@ -88,6 +88,26 @@
   color: var(--cv-text-muted);
 }
 
+.doc-download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  background: var(--cv-card-bg);
+  border: 1px solid var(--cv-border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cv-navy);
+  text-decoration: none;
+}
+
+.doc-download-link:hover {
+  border-color: var(--cv-navy);
+  background: var(--cv-green-bg);
+}
+
 .recommendation-list {
   list-style: none;
   margin: 8px 0 0;

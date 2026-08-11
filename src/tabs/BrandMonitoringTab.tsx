@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { FileDown } from 'lucide-react';
 import {
   Bar,
   BarChart,
@@ -132,6 +133,10 @@ export function BrandMonitoringTab() {
         not provided to this prototype. No number below is taken from the PDF; every section is
         upload-driven and empty until a real Brand Monitoring file is loaded (Data Sources panel
         above).
+        <br />
+        <a className="doc-download-link" href="/docs/Brand_Monitor_2026_Analysis_1.pdf" download>
+          <FileDown size={14} aria-hidden="true" /> Download Brand Monitor 2026 (PDF)
+        </a>
       </InfoNote>
 
       <SectionPlaceholder title="Filters" description="Market and year, applied to every section below.">
