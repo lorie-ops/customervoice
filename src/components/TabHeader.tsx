@@ -21,10 +21,12 @@ export function TabHeader({ tabId }: TabHeaderProps) {
         <Icon size={22} aria-hidden="true" />
         {tab.label}
       </h1>
-      <p className="tab-header__owner" title={tab.ownerTooltip}>
-        <Info size={14} aria-hidden="true" />
-        {tab.ownerSubtitle}
-      </p>
+      {tab.ownerSubtitle ? (
+        <p className="tab-header__owner" title={tab.ownerTooltip}>
+          <Info size={14} aria-hidden="true" />
+          {tab.ownerSubtitle}
+        </p>
+      ) : null}
     </div>
   );
 }

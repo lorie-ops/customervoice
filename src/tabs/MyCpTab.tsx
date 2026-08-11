@@ -9,12 +9,10 @@ import { FilterBar, FilterField } from '../components/FilterBar';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
 import { mycpPdBreakdownByMarket, themeAnalysisByMarket, themeEnrichmentByMarket } from '../lib/fixtures';
 import { useDashboardData } from '../state/DataContext';
-import { calculateHotjarAverage } from '../lib/calculations';
 import { formatNps, formatNumber } from '../lib/format';
 import { MYCP_APRIL_2025_NPS_COMPARISON, MYCP_NPS_TARGET_OKR_EXAMPLE } from '../lib/mycpBaseline';
 import type { Market } from '../types';
 
-type Scope = 'mycp' | 'web' | 'both';
 type MarketFilter = 'all' | Market;
 
 const THEME_MARKETS: Market[] = ['DE', 'FR', 'NL'];
@@ -22,23 +20,18 @@ const THEME_MARKETS: Market[] = ['DE', 'FR', 'NL'];
 const TREND_ICON = { up: TrendingUp, down: TrendingDown, flat: Minus } as const;
 
 /**
- * CSAT tab - owned by Marketing / Customer insight lead (monthly
- * satisfaction reporting). Section order follows docs/PROJECT_SPEC.md §2.
- * Default scope is MyCP only (CLAUDE.md, PROJECT_SPEC.md).
+ * MyCP tab - owned by Marketing / Customer insight lead (monthly
+ * satisfaction reporting). Pure MyCP content only - Web/Hotjar content
+ * moved to its own tab (business feedback). Section order follows
+ * docs/PROJECT_SPEC.md §2.
  */
-export function CsatTab() {
-  const { hotjarRows, mycpBaseline, mycpSource } = useDashboardData();
-  const [scope, setScope] = useState<Scope>('mycp');
+export function MyCpTab() {
+  const { mycpBaseline, mycpSource } = useDashboardData();
   const [market, setMarket] = useState<MarketFilter>('all');
   const [themeMarket, setThemeMarket] = useState<Market>('DE');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
 
   const mycpStats = market === 'all' ? mycpBaseline.global : mycpBaseline.markets[market];
-  const webScores = hotjarRows
-    .filter((row) => market === 'all' || row.country === market)
-    .map((row) => row.score);
-  const webAverage = calculateHotjarAverage(webScores);
-  const webScoredCount = webScores.filter((score) => score !== null && score !== undefined).length;
 
   const marketRows = MARKETS.filter((m) => market === 'all' || m === market).map((m) => ({
     market: m,
@@ -65,22 +58,11 @@ export function CsatTab() {
   const deepDiveTheme = themeRows.find((t) => t.theme === selectedTheme) ?? null;
 
   return (
-    <div role="tabpanel" id="tabpanel-csat" aria-labelledby="tab-csat">
-      <TabHeader tabId="csat" />
+    <div role="tabpanel" id="tabpanel-mycp" aria-labelledby="tab-mycp">
+      <TabHeader tabId="mycp" />
 
-      <SectionPlaceholder
-        title="Filters"
-        description="Scope (MyCP only / Web only / Web + MyCP) and market. Default scope: MyCP only."
-        tag="Default: MyCP"
-      >
+      <SectionPlaceholder title="Filters" description="Market filter, applied to every section below.">
         <FilterBar>
-          <FilterField label="Scope">
-            <select value={scope} onChange={(event) => setScope(event.target.value as Scope)}>
-              <option value="mycp">MyCP only</option>
-              <option value="web">Web only</option>
-              <option value="both">Web + MyCP</option>
-            </select>
-          </FilterField>
           <FilterField label="Market">
             <select value={market} onChange={(event) => setMarket(event.target.value as MarketFilter)}>
               <option value="all">All markets</option>
@@ -95,7 +77,7 @@ export function CsatTab() {
       </SectionPlaceholder>
 
       <SectionPlaceholder
-        title="Global CSAT Scores"
+        title="Global MyCP Scores"
         description={
           mycpSource === 'upload'
             ? 'Live MyCP data - all six market files loaded and coherent (docs/BACKLOG.md Phase 6).'
@@ -103,36 +85,14 @@ export function CsatTab() {
         }
       >
         <div className="kpi-grid">
-          {(scope === 'mycp' || scope === 'both') && (
-            <>
-              <KpiCard
-                label="MyCP Average"
-                value={mycpStats.average.toFixed(1)}
-                unit=" / 10"
-                tone="purple"
-                footnote={`${formatNumber(mycpStats.responses)} responses`}
-              />
-              <KpiCard label="MyCP NPS" value={formatNps(mycpStats.nps)} tone="purple" />
-            </>
-          )}
-          {(scope === 'web' || scope === 'both') && (
-            <>
-              <KpiCard
-                label="Web (Hotjar) Average"
-                value={webAverage !== null ? webAverage.toFixed(1) : null}
-                unit=" / 5"
-                tone="blue"
-                footnote={`${webScoredCount} scored responses (fixture, unanswered excluded)`}
-              />
-              <KpiCard
-                label="Web (Hotjar) NPS"
-                value={null}
-                tone="blue"
-                emptyMessage="Non applicable"
-                footnote="NPS is not defined for the 1-5 Hotjar scale in this data model - never mixed with the MyCP NPS above."
-              />
-            </>
-          )}
+          <KpiCard
+            label="MyCP Average"
+            value={mycpStats.average.toFixed(1)}
+            unit=" / 10"
+            tone="purple"
+            footnote={`${formatNumber(mycpStats.responses)} responses`}
+          />
+          <KpiCard label="MyCP NPS" value={formatNps(mycpStats.nps)} tone="purple" />
         </div>
         <InfoNote>
           Some values shown in the old CSAT screenshot are not this validated baseline - the
@@ -341,11 +301,11 @@ export function CsatTab() {
           </div>
         </div>
         <InfoNote>
-          Medallia (real aggregated data, 21,707 responses, April 2026 export) is a separate
-          post-stay survey - different population and collection timing than MyCP. Per the
-          non-merge rule (docs/DATA_MODEL_ADDENDUM.md §3), it is never combined with the MyCP NPS
-          shown above and, if surfaced later, will always be labeled explicitly (e.g.
-          "NPS - Medallia" vs "NPS - MyCP"). Not used yet in this phase.
+          Medallia (after-stay survey) is a separate source with a different population and
+          collection timing than MyCP. Per the non-merge rule (docs/DATA_MODEL_ADDENDUM.md §3),
+          it is never combined with the MyCP NPS shown above - see the Data Sources panel above
+          and, once connected, its own reporting will always be labeled explicitly (e.g.
+          "NPS - Medallia" vs "NPS - MyCP").
         </InfoNote>
       </SectionPlaceholder>
     </div>

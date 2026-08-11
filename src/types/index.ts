@@ -68,6 +68,53 @@ export type MyCpRow = {
   improveVerbatim?: string;
   optimizeVerbatim?: string;
   source: 'MyCP';
+  journeyStage?: JourneyStage;
+};
+
+/**
+ * A single row from a real Medallia XLSX export - the after-stay survey
+ * (docs/DATA_MODEL_ADDENDUM.md §3). Deliberately its own type, never
+ * merged with MyCpRow: different population and collection timing
+ * (non-merge rule).
+ */
+export type MedalliaRow = {
+  id: string;
+  date: string;
+  market: Market;
+  /** 0-10 scale, same convention as MyCP, but never combined with MyCP's NPS/average. */
+  score: number;
+  returnIntent?: 'yes' | 'no' | 'unsure';
+  comment?: string;
+  source: 'Medallia';
+};
+
+/**
+ * A single market/year row from a real Brand Monitor XLSX export. Brand
+ * image / CP image attributes are open-ended score maps (attribute label
+ * -> score) since the exact attribute list is confirmed against the real
+ * export's headers, not hardcoded here (see constants/brandMonitoring.ts
+ * for the reference attribute lists used for column matching).
+ */
+export type BrandMonitoringRow = {
+  id: string;
+  market: Market;
+  year: number;
+  brand: string;
+  awarenessTotal?: number;
+  awarenessSpontaneous?: number;
+  awarenessAided?: number;
+  awarenessTopOfMind?: number;
+  consideration?: number;
+  preference?: number;
+  shortList?: number;
+  user?: number;
+  repeater?: number;
+  loyal?: number;
+  /** Attribute label -> score (%). Only attributes present in the source file are included. */
+  brandImage: Record<string, number>;
+  /** Perception statement -> score (%). Only statements present in the source file are included. */
+  cpImage: Record<string, number>;
+  source: 'BrandMonitoring';
 };
 
 export type MyCpMarketStats = {

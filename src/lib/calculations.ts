@@ -166,6 +166,31 @@ export function calculateWeeklyHotjarAverage(rows: HotjarRow[]): WeeklyHotjarAve
     });
 }
 
+export type HotjarScoreDistribution = {
+  scoredCount: number;
+  /** Percentage of scored responses at each 1-5 score. Empty distribution -> all zero. */
+  byScore: Record<1 | 2 | 3 | 4 | 5, number>;
+};
+
+/**
+ * Distribution of Hotjar 1-5 scores as percentages of answered responses.
+ * Unanswered (null/undefined) scores are excluded, mirroring
+ * calculateHotjarAverage - never counted as a score bucket.
+ */
+export function calculateHotjarScoreDistribution(scores: Array<number | null | undefined>): HotjarScoreDistribution {
+  const answered = scores.filter((score): score is number => score !== null && score !== undefined);
+  const byScore = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<1 | 2 | 3 | 4 | 5, number>;
+  if (answered.length === 0) return { scoredCount: 0, byScore };
+  for (const score of answered) {
+    const bucket = Math.round(score) as 1 | 2 | 3 | 4 | 5;
+    if (bucket >= 1 && bucket <= 5) byScore[bucket] += 1;
+  }
+  for (const bucket of [1, 2, 3, 4, 5] as const) {
+    byScore[bucket] = (byScore[bucket] / answered.length) * 100;
+  }
+  return { scoredCount: answered.length, byScore };
+}
+
 /** Category counts for Hotjar rows falling within [start, end]. */
 export function countHotjarByCategory(
   rows: HotjarRow[],

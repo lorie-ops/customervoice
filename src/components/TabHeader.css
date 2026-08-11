@@ -13,7 +13,7 @@
 }
 
 .tab-header__owner {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
   margin: 4px 0 0;

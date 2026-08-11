@@ -416,7 +416,7 @@ export function OverviewTab() {
         <InfoNote>
           Future candidate source: Medallia (21,707 responses, April 2026 export) may eventually
           appear here as an explicitly-labeled, separate metric (e.g. "NPS - Medallia") - pending
-          Marketing sign-off. It will never be merged with the MyCP NPS shown on the CSAT tab
+          Marketing sign-off. It will never be merged with the MyCP NPS shown on the MyCP tab
           (docs/DATA_MODEL_ADDENDUM.md §3).
         </InfoNote>
       </SectionPlaceholder>

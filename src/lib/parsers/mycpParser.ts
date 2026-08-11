@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { findColumn } from './normalizeHeader';
 import { MARKETS } from '../../constants/markets';
-import type { Market, MyCpRow } from '../../types';
+import type { JourneyStage, Market, MyCpRow } from '../../types';
 import type { ParseResult } from './hotjarParser';
 
 const ALIASES = {
@@ -12,6 +12,16 @@ const ALIASES = {
   sorryVerbatim: ['sorry', 'what are you sorry about', 'apology', 'what went wrong'],
   improveVerbatim: ['improve', 'what could we improve', 'improvement'],
   optimizeVerbatim: ['optimize', 'what could we optimize', 'optimization', 'what worked well'],
+  journeyStage: ['journey stage', 'stage', 'moment', 'journey'],
+};
+
+const JOURNEY_STAGE_VALUES: Record<string, JourneyStage> = {
+  before: 'before',
+  'before stay': 'before',
+  during: 'during',
+  'during stay': 'during',
+  after: 'after',
+  'after stay': 'after',
 };
 
 /**
@@ -41,6 +51,7 @@ export function parseMyCpWorkbook(data: ArrayBuffer, market: Market): ParseResul
     sorryVerbatim: findColumn(raw[0], ALIASES.sorryVerbatim),
     improveVerbatim: findColumn(raw[0], ALIASES.improveVerbatim),
     optimizeVerbatim: findColumn(raw[0], ALIASES.optimizeVerbatim),
+    journeyStage: findColumn(raw[0], ALIASES.journeyStage),
   };
 
   if (!cols.date || !cols.score) {
@@ -67,6 +78,14 @@ export function parseMyCpWorkbook(data: ArrayBuffer, market: Market): ParseResul
       warnings.push(`Row ${index + 2}: missing date or score - skipped.`);
       return;
     }
+    const rawStage = cols.journeyStage
+      ? String(record[cols.journeyStage] ?? '').trim().toLowerCase()
+      : '';
+    const journeyStage = rawStage ? JOURNEY_STAGE_VALUES[rawStage] : undefined;
+    if (rawStage && !journeyStage) {
+      warnings.push(`Row ${index + 2}: unrecognized journey stage "${rawStage}" - left unset (shown as Unknown).`);
+    }
+
     rows.push({
       id: cols.id ? String(record[cols.id] ?? `mycp-${market}-${index}`) : `mycp-${market}-${index}`,
       date,
@@ -76,6 +95,7 @@ export function parseMyCpWorkbook(data: ArrayBuffer, market: Market): ParseResul
       improveVerbatim: cols.improveVerbatim ? String(record[cols.improveVerbatim] ?? '') || undefined : undefined,
       optimizeVerbatim: cols.optimizeVerbatim ? String(record[cols.optimizeVerbatim] ?? '') || undefined : undefined,
       source: 'MyCP',
+      journeyStage,
     });
   });
 
