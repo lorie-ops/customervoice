@@ -14,8 +14,10 @@ import type {
 } from '../types';
 
 type SourceState = 'fixture' | 'upload';
-/** Upload-only sources with no fixture/baseline fallback (Medallia, Brand Monitoring). */
+/** Upload-only, per-market source with no fixture/baseline fallback (Medallia). */
 type UploadState = 'not-loaded' | 'partial' | 'complete';
+/** Upload-only, single-file-for-all-markets source (Brand Monitoring - business exception). */
+type SingleFileUploadState = 'not-loaded' | 'loaded';
 
 type ByMarket<T> = Partial<Record<Market, T[]>>;
 
@@ -64,10 +66,10 @@ type DataState = {
   medalliaRows: MedalliaRow[];
   medalliaSource: UploadState;
 
-  brandMonitoringRowsByMarket: ByMarket<BrandMonitoringRow>;
-  brandMonitoringWarningsByMarket: ByMarket<string>;
+  /** Exception: one file for all 6 markets (business feedback), not one per market. */
   brandMonitoringRows: BrandMonitoringRow[];
-  brandMonitoringSource: UploadState;
+  brandMonitoringWarnings: string[];
+  brandMonitoringSource: SingleFileUploadState;
 };
 
 type DataActions = {
@@ -75,7 +77,8 @@ type DataActions = {
   setCrmMarketRows: (market: Market, rows: CRMRow[], warnings: string[]) => void;
   setMyCpMarketRows: (market: Market, rows: MyCpRow[], warnings: string[]) => void;
   setMedalliaMarketRows: (market: Market, rows: MedalliaRow[], warnings: string[]) => void;
-  setBrandMonitoringMarketRows: (market: Market, rows: BrandMonitoringRow[], warnings: string[]) => void;
+  /** Single-file setter (exception - see brandMonitoringRows above). */
+  setBrandMonitoringRows: (rows: BrandMonitoringRow[], warnings: string[]) => void;
   resetToFixtures: () => void;
 };
 
@@ -95,10 +98,12 @@ const initialCrmByMarket = () => groupByMarket(fixtureCrmRows, (row) => row.mark
  * - MyCP: the static, validated April 2026 baseline stays active until all
  *   six market files are loaded and coherent (CLAUDE.md "Data loading"
  *   rules) - unchanged from Phase 6.
- * - Medallia/Brand Monitoring: new sources, no fixture and no static
- *   baseline - they start empty ("not-loaded") and accumulate per-market
- *   uploads. Medallia is never merged with MyCP (non-merge rule,
- *   docs/DATA_MODEL_ADDENDUM.md §3).
+ * - Medallia: new source, no fixture and no static baseline - starts
+ *   empty ("not-loaded") and accumulates per-market uploads. Never merged
+ *   with MyCP (non-merge rule, docs/DATA_MODEL_ADDENDUM.md §3).
+ * - Brand Monitoring: also new, but delivered as ONE file covering all 6
+ *   markets (business exception, unlike every other source here) - a
+ *   single flat upload, not a per-market map.
  */
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hotjarRowsByMarket, setHotjarRowsByMarket] = useState<ByMarket<HotjarRow>>(initialHotjarByMarket);
@@ -115,8 +120,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [medalliaRowsByMarket, setMedalliaRowsByMarket] = useState<ByMarket<MedalliaRow>>({});
   const [medalliaWarningsByMarket, setMedalliaWarningsByMarket] = useState<ByMarket<string>>({});
 
-  const [brandMonitoringRowsByMarket, setBrandMonitoringRowsByMarket] = useState<ByMarket<BrandMonitoringRow>>({});
-  const [brandMonitoringWarningsByMarket, setBrandMonitoringWarningsByMarket] = useState<ByMarket<string>>({});
+  const [brandMonitoringRows, setBrandMonitoringRowsState] = useState<BrandMonitoringRow[]>([]);
+  const [brandMonitoringWarnings, setBrandMonitoringWarnings] = useState<string[]>([]);
 
   const hotjarRows = useMemo(() => flatten(hotjarRowsByMarket), [hotjarRowsByMarket]);
   const hotjarSource: SourceState = MARKETS.some((m) => hotjarSourceByMarket[m] === 'upload') ? 'upload' : 'fixture';
@@ -134,11 +139,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const medalliaRows = useMemo(() => flatten(medalliaRowsByMarket), [medalliaRowsByMarket]);
   const medalliaSource = useMemo(() => computeUploadState(medalliaRowsByMarket), [medalliaRowsByMarket]);
 
-  const brandMonitoringRows = useMemo(() => flatten(brandMonitoringRowsByMarket), [brandMonitoringRowsByMarket]);
-  const brandMonitoringSource = useMemo(
-    () => computeUploadState(brandMonitoringRowsByMarket),
-    [brandMonitoringRowsByMarket],
-  );
+  const brandMonitoringSource: SingleFileUploadState = brandMonitoringRows.length > 0 ? 'loaded' : 'not-loaded';
 
   const value: DataState & DataActions = {
     hotjarRowsByMarket,
@@ -164,9 +165,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     medalliaRows,
     medalliaSource,
 
-    brandMonitoringRowsByMarket,
-    brandMonitoringWarningsByMarket,
     brandMonitoringRows,
+    brandMonitoringWarnings,
     brandMonitoringSource,
 
     setHotjarMarketRows: (market, rows, warnings) => {
@@ -187,9 +187,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setMedalliaRowsByMarket((prev) => ({ ...prev, [market]: rows }));
       setMedalliaWarningsByMarket((prev) => ({ ...prev, [market]: warnings }));
     },
-    setBrandMonitoringMarketRows: (market, rows, warnings) => {
-      setBrandMonitoringRowsByMarket((prev) => ({ ...prev, [market]: rows }));
-      setBrandMonitoringWarningsByMarket((prev) => ({ ...prev, [market]: warnings }));
+    setBrandMonitoringRows: (rows, warnings) => {
+      setBrandMonitoringRowsState(rows);
+      setBrandMonitoringWarnings(warnings);
     },
     resetToFixtures: () => {
       setHotjarRowsByMarket(initialHotjarByMarket());
@@ -202,8 +202,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setMycpWarningsByMarket({});
       setMedalliaRowsByMarket({});
       setMedalliaWarningsByMarket({});
-      setBrandMonitoringRowsByMarket({});
-      setBrandMonitoringWarningsByMarket({});
+      setBrandMonitoringRowsState([]);
+      setBrandMonitoringWarnings([]);
     },
   };
 

@@ -111,26 +111,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
+  /* Solid (not translucent) so the connecting track line behind it never
+     shows through - a translucent fill let the line bleed into the icon.
+     Slightly lighter than the hero background so the ring still reads as
+     a distinct circle against it. */
+  background: #1a5c47;
   border: 2px solid rgba(255, 255, 255, 0.35);
   color: #fff;
   z-index: 1;
   position: relative;
 }
 
-/* Opaque backing disc so the connecting track line never shows through
-   the node's translucent fill - the line must stop at the circle's edge. */
-.journey-stepper__node::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 999px;
-  background: var(--cv-navy);
-  z-index: -1;
-}
-
 .journey-stepper__step--past .journey-stepper__node {
-  background: rgba(255, 255, 255, 0.9);
+  background: #fff;
   border-color: #fff;
   color: var(--cv-navy);
 }

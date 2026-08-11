@@ -71,6 +71,52 @@ function SourceMarketGrid({
 }
 
 /**
+ * Single-file upload block, for the one source delivered as one file
+ * covering all 6 markets rather than one file per market (Brand
+ * Monitoring - business exception, see DataContext.tsx).
+ */
+function SingleFileUpload({
+  title,
+  statusLine,
+  loaded,
+  rowCount,
+  warnings,
+  onFile,
+}: {
+  title: string;
+  statusLine: string;
+  loaded: boolean;
+  rowCount: number;
+  warnings: string[];
+  onFile: (file: File) => void;
+}) {
+  return (
+    <div className="data-loader__source-block">
+      <p className="data-loader__label">
+        {title} - one file for all markets ({statusLine})
+      </p>
+      <div className="data-loader__mycp-market" style={{ maxWidth: 260 }}>
+        <p className="data-loader__mycp-market-label">
+          {loaded ? (
+            <CircleCheck size={14} aria-hidden="true" color="var(--cv-green)" />
+          ) : (
+            <CircleAlert size={14} aria-hidden="true" color="var(--cv-text-muted)" />
+          )}
+          All markets
+        </p>
+        <input
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          onChange={(event) => event.target.files?.[0] && onFile(event.target.files[0])}
+        />
+        <p className="filter-note">{loaded ? `${rowCount} rows` : 'Not loaded'}</p>
+        {warnings.length > 0 ? <p className="filter-note">{warnings.length} warning(s)</p> : null}
+      </div>
+    </div>
+  );
+}
+
+/**
  * File loading UI (docs/BACKLOG.md Phase 6, expanded to all 5 sources).
  * Loading state and data quality are always visible (CLAUDE.md "Data
  * loading" rules) - this bar is present whenever the dashboard is open,
@@ -108,9 +154,9 @@ export function DataLoaderPanel() {
     data.setMedalliaMarketRows(market, rows, warnings);
   }
 
-  async function handleBrandMonitoringFile(market: Market, file: File) {
-    const { rows, warnings } = parseBrandMonitoringWorkbook(await file.arrayBuffer(), market);
-    data.setBrandMonitoringMarketRows(market, rows, warnings);
+  async function handleBrandMonitoringFile(file: File) {
+    const { rows, warnings } = parseBrandMonitoringWorkbook(await file.arrayBuffer());
+    data.setBrandMonitoringRows(rows, warnings);
   }
 
   return (
@@ -185,21 +231,16 @@ export function DataLoaderPanel() {
             onFile={handleCrmFile}
           />
 
-          <SourceMarketGrid
+          <SingleFileUpload
             title="Brand Monitoring"
             statusLine={
               data.brandMonitoringSource === 'not-loaded'
-                ? 'no market connected yet - planned source'
-                : `${data.brandMonitoringSource === 'complete' ? 'all 6' : 'some'} markets loaded`
+                ? 'not connected yet - planned source'
+                : `loaded - ${data.brandMonitoringRows.length} rows across all markets`
             }
-            getStatus={(market) => {
-              const rows = data.brandMonitoringRowsByMarket[market];
-              return {
-                loaded: Boolean(rows),
-                detail: rows ? `${rows.length} rows` : 'Not loaded',
-                warnings: data.brandMonitoringWarningsByMarket[market],
-              };
-            }}
+            loaded={data.brandMonitoringSource === 'loaded'}
+            rowCount={data.brandMonitoringRows.length}
+            warnings={data.brandMonitoringWarnings}
             onFile={handleBrandMonitoringFile}
           />
 

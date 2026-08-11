@@ -23,18 +23,23 @@ const ALIASES = {
 };
 
 /**
- * Parses a single-market Brand Monitor XLSX/CSV export into
- * BrandMonitoringRow[] - one row per (brand, year) so both Center Parcs
- * and competitor benchmark rows can live in the same file. `market` is
- * the market assigned to this file in the upload UI, mirroring
- * mycpParser.ts/medalliaParser.ts. Brand Image / CP Image columns are
+ * Parses a Brand Monitor XLSX/CSV export into BrandMonitoringRow[].
+ *
+ * Exception to every other source in this prototype: Brand Monitoring is
+ * delivered as ONE file covering all 6 markets (business feedback), not
+ * one file per market. The market for each row therefore comes from the
+ * file's own market/country column, which is required here (unlike
+ * mycpParser.ts/medalliaParser.ts, where market is assigned by the
+ * per-market upload slot and an in-file column is only a cross-check).
+ * One row per (market, brand, year) so Center Parcs and competitor
+ * benchmark rows share the same file. Brand Image / CP Image columns are
  * matched against the reference attribute lists in
  * constants/brandMonitoring.ts (this prototype's best-effort
  * reconstruction, pending a real export - see that file's own note)
  * rather than hardcoded positions, so a real file with a subset of those
  * columns still parses.
  */
-export function parseBrandMonitoringWorkbook(data: ArrayBuffer, market: Market): ParseResult<BrandMonitoringRow> {
+export function parseBrandMonitoringWorkbook(data: ArrayBuffer): ParseResult<BrandMonitoringRow> {
   const warnings: string[] = [];
   const workbook = XLSX.read(data, { type: 'array' });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -68,9 +73,9 @@ export function parseBrandMonitoringWorkbook(data: ArrayBuffer, market: Market):
     (c) => c.col,
   );
 
-  if (!cols.brand || !cols.year) {
+  if (!cols.brand || !cols.year || !cols.market) {
     warnings.push(
-      `Could not find required columns (brand, year) by header name. Detected headers: ${Object.keys(raw[0]).join(', ')}`,
+      `Could not find required columns (brand, year, market) by header name. Detected headers: ${Object.keys(raw[0]).join(', ')}`,
     );
     return { rows: [], warnings };
   }
@@ -88,12 +93,10 @@ export function parseBrandMonitoringWorkbook(data: ArrayBuffer, market: Market):
 
   const rows: BrandMonitoringRow[] = [];
   raw.forEach((record, index) => {
-    if (cols.market) {
-      const inFileMarket = String(record[cols.market] ?? '').trim().toUpperCase();
-      if (inFileMarket && MARKETS.includes(inFileMarket as Market) && inFileMarket !== market) {
-        warnings.push(`Row ${index + 2}: file market column says "${inFileMarket}" but this file was assigned to ${market} - skipped.`);
-        return;
-      }
+    const market = String(record[cols.market!] ?? '').trim().toUpperCase();
+    if (!MARKETS.includes(market as Market)) {
+      warnings.push(`Row ${index + 2}: unrecognized or missing market "${market}" - skipped.`);
+      return;
     }
     const brand = String(record[cols.brand!] ?? '').trim();
     const year = Number(record[cols.year!]);
@@ -115,7 +118,7 @@ export function parseBrandMonitoringWorkbook(data: ArrayBuffer, market: Market):
 
     rows.push({
       id: cols.id ? String(record[cols.id] ?? `brand-${market}-${index}`) : `brand-${market}-${index}`,
-      market,
+      market: market as Market,
       year,
       brand,
       awarenessTotal: numOrUndefined(cols.awarenessTotal ? record[cols.awarenessTotal] : undefined),
