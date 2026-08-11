@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 import { hotjarRows as fixtureHotjarRows, crmRows as fixtureCrmRows } from '../lib/fixtures';
 import { MYCP_BASELINE_APRIL_2026 } from '../lib/mycpBaseline';
 import { computeMyCpBaselineFromRows, isMyCpDataCoherent } from '../lib/calculations';
+import { buildStaticBrandMonitoringRows } from '../lib/brandMonitorExtraction';
 import { MARKETS } from '../constants/markets';
 import type {
   BrandMonitoringRow,
@@ -16,8 +17,10 @@ import type {
 type SourceState = 'fixture' | 'upload';
 /** Upload-only, per-market source with no fixture/baseline fallback (Medallia). */
 type UploadState = 'not-loaded' | 'partial' | 'complete';
-/** Upload-only, single-file-for-all-markets source (Brand Monitoring - business exception). */
-type SingleFileUploadState = 'not-loaded' | 'loaded';
+/** Single-file-for-all-markets source (Brand Monitoring - business exception). Starts on
+ * the validated PDF-extraction baseline (lib/brandMonitorExtraction.ts), same "display
+ * validated static data immediately" pattern as MyCP - replaced only by a real upload. */
+type SingleFileUploadState = 'static' | 'upload';
 
 type ByMarket<T> = Partial<Record<Market, T[]>>;
 
@@ -101,9 +104,11 @@ const initialCrmByMarket = () => groupByMarket(fixtureCrmRows, (row) => row.mark
  * - Medallia: new source, no fixture and no static baseline - starts
  *   empty ("not-loaded") and accumulates per-market uploads. Never merged
  *   with MyCP (non-merge rule, docs/DATA_MODEL_ADDENDUM.md §3).
- * - Brand Monitoring: also new, but delivered as ONE file covering all 6
- *   markets (business exception, unlike every other source here) - a
- *   single flat upload, not a per-market map.
+ * - Brand Monitoring: delivered as ONE file covering all 6 markets
+ *   (business exception, unlike every other source here) - a single flat
+ *   upload, not a per-market map. Displays the validated static
+ *   extraction from Brand_Monitor_2026_Analysis_1.pdf immediately
+ *   (lib/brandMonitorExtraction.ts), replaced only by a real upload.
  */
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hotjarRowsByMarket, setHotjarRowsByMarket] = useState<ByMarket<HotjarRow>>(initialHotjarByMarket);
@@ -120,8 +125,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [medalliaRowsByMarket, setMedalliaRowsByMarket] = useState<ByMarket<MedalliaRow>>({});
   const [medalliaWarningsByMarket, setMedalliaWarningsByMarket] = useState<ByMarket<string>>({});
 
-  const [brandMonitoringRows, setBrandMonitoringRowsState] = useState<BrandMonitoringRow[]>([]);
+  const [brandMonitoringRows, setBrandMonitoringRowsState] = useState<BrandMonitoringRow[]>(buildStaticBrandMonitoringRows);
   const [brandMonitoringWarnings, setBrandMonitoringWarnings] = useState<string[]>([]);
+  const [brandMonitoringSource, setBrandMonitoringSource] = useState<SingleFileUploadState>('static');
 
   const hotjarRows = useMemo(() => flatten(hotjarRowsByMarket), [hotjarRowsByMarket]);
   const hotjarSource: SourceState = MARKETS.some((m) => hotjarSourceByMarket[m] === 'upload') ? 'upload' : 'fixture';
@@ -138,8 +144,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const medalliaRows = useMemo(() => flatten(medalliaRowsByMarket), [medalliaRowsByMarket]);
   const medalliaSource = useMemo(() => computeUploadState(medalliaRowsByMarket), [medalliaRowsByMarket]);
-
-  const brandMonitoringSource: SingleFileUploadState = brandMonitoringRows.length > 0 ? 'loaded' : 'not-loaded';
 
   const value: DataState & DataActions = {
     hotjarRowsByMarket,
@@ -190,6 +194,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setBrandMonitoringRows: (rows, warnings) => {
       setBrandMonitoringRowsState(rows);
       setBrandMonitoringWarnings(warnings);
+      setBrandMonitoringSource('upload');
     },
     resetToFixtures: () => {
       setHotjarRowsByMarket(initialHotjarByMarket());
@@ -202,8 +207,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setMycpWarningsByMarket({});
       setMedalliaRowsByMarket({});
       setMedalliaWarningsByMarket({});
-      setBrandMonitoringRowsState([]);
+      setBrandMonitoringRowsState(buildStaticBrandMonitoringRows());
       setBrandMonitoringWarnings([]);
+      setBrandMonitoringSource('static');
     },
   };
 

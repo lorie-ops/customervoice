@@ -79,14 +79,14 @@ function SingleFileUpload({
   title,
   statusLine,
   loaded,
-  rowCount,
+  detail,
   warnings,
   onFile,
 }: {
   title: string;
   statusLine: string;
   loaded: boolean;
-  rowCount: number;
+  detail: string;
   warnings: string[];
   onFile: (file: File) => void;
 }) {
@@ -109,7 +109,7 @@ function SingleFileUpload({
           accept=".xlsx,.xls,.csv"
           onChange={(event) => event.target.files?.[0] && onFile(event.target.files[0])}
         />
-        <p className="filter-note">{loaded ? `${rowCount} rows` : 'Not loaded'}</p>
+        <p className="filter-note">{detail}</p>
         {warnings.length > 0 ? <p className="filter-note">{warnings.length} warning(s)</p> : null}
       </div>
     </div>
@@ -167,7 +167,7 @@ export function DataLoaderPanel() {
           Data sources: Web {data.hotjarSource === 'upload' ? `live upload (${data.hotjarRows.length})` : 'fixture'} · MyCP{' '}
           {data.mycpSource === 'upload' ? 'live upload (6/6 markets)' : 'validated static baseline'} · CRM{' '}
           {data.crmSource === 'upload' ? `live upload (${data.crmRows.length})` : 'fixture'} · Brand Monitoring{' '}
-          {data.brandMonitoringSource === 'not-loaded' ? 'not connected' : `${data.brandMonitoringRows.length} rows`} · Medallia{' '}
+          {data.brandMonitoringSource === 'upload' ? `live upload (${data.brandMonitoringRows.length} rows)` : 'validated PDF extraction'} · Medallia{' '}
           {data.medalliaSource === 'not-loaded' ? 'not connected' : `${data.medalliaRows.length} rows`}
         </span>
         {open ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
@@ -234,12 +234,16 @@ export function DataLoaderPanel() {
           <SingleFileUpload
             title="Brand Monitoring"
             statusLine={
-              data.brandMonitoringSource === 'not-loaded'
-                ? 'not connected yet - planned source'
-                : `loaded - ${data.brandMonitoringRows.length} rows across all markets`
+              data.brandMonitoringSource === 'static'
+                ? 'validated static extraction from Brand_Monitor_2026_Analysis_1.pdf, active until a real file is uploaded'
+                : `live upload active - ${data.brandMonitoringRows.length} rows across all markets`
             }
-            loaded={data.brandMonitoringSource === 'loaded'}
-            rowCount={data.brandMonitoringRows.length}
+            loaded={data.brandMonitoringSource === 'upload'}
+            detail={
+              data.brandMonitoringSource === 'upload'
+                ? `Uploaded - ${data.brandMonitoringRows.length} rows`
+                : `${data.brandMonitoringRows.length} rows (validated PDF extraction)`
+            }
             warnings={data.brandMonitoringWarnings}
             onFile={handleBrandMonitoringFile}
           />

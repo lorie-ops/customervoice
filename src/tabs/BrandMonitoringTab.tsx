@@ -27,6 +27,11 @@ import { FilterBar, FilterField } from '../components/FilterBar';
 import { EmptyState } from '../components/EmptyState';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
 import { BRAND_IMAGE_ATTRIBUTES, CP_IMAGE_STATEMENTS } from '../constants/brandMonitoring';
+import {
+  BRAND_MONITOR_GOAL_EUROPE,
+  BRAND_MONITOR_INSIGHTS_BY_MARKET,
+  BRAND_MONITOR_INSIGHTS_EUROPE,
+} from '../lib/brandMonitorExtraction';
 import { useDashboardData } from '../state/DataContext';
 import { formatPercent } from '../lib/format';
 import type { BrandMonitoringRow, Market } from '../types';
@@ -35,6 +40,63 @@ type MarketFilter = 'all' | Market;
 
 function isCenterParcs(row: BrandMonitoringRow) {
   return row.brand.trim().toLowerCase() === 'center parcs';
+}
+
+const AVERAGEABLE_KEYS = [
+  'awarenessTotal',
+  'awarenessSpontaneous',
+  'awarenessAided',
+  'awarenessTopOfMind',
+  'consideration',
+  'preference',
+  'shortList',
+  'user',
+  'repeater',
+  'loyal',
+] as const;
+
+function averageNumber(values: Array<number | undefined>): number | undefined {
+  const defined = values.filter((v): v is number => typeof v === 'number');
+  return defined.length > 0 ? defined.reduce((sum, v) => sum + v, 0) / defined.length : undefined;
+}
+
+function averageImageMap(rows: BrandMonitoringRow[], key: 'brandImage' | 'cpImage'): Record<string, number> {
+  const attrs = new Set(rows.flatMap((row) => Object.keys(row[key])));
+  const result: Record<string, number> = {};
+  for (const attr of attrs) {
+    const value = averageNumber(rows.map((row) => row[key][attr]));
+    if (value !== undefined) result[attr] = value;
+  }
+  return result;
+}
+
+/**
+ * "All markets" is not a real row in the data - it is a cross-market
+ * average of each market's own Center Parcs row for that year, since the
+ * PDF's 500-respondents-per-market design has no meaningful weighting
+ * beyond a simple mean across markets. Never just picks the first
+ * market's row (that would silently mislabel one market's numbers as
+ * "all markets").
+ */
+function averageCenterParcsRow(rows: BrandMonitoringRow[]): BrandMonitoringRow | null {
+  const cpRows = rows.filter(isCenterParcs);
+  if (cpRows.length === 0) return null;
+  if (cpRows.length === 1) return cpRows[0];
+  const averaged: Partial<Record<(typeof AVERAGEABLE_KEYS)[number], number>> = {};
+  for (const key of AVERAGEABLE_KEYS) {
+    const value = averageNumber(cpRows.map((row) => row[key]));
+    if (value !== undefined) averaged[key] = value;
+  }
+  return {
+    id: 'brandmonitor-all-markets-average',
+    market: cpRows[0].market,
+    year: cpRows[0].year,
+    brand: 'Center Parcs',
+    brandImage: averageImageMap(cpRows, 'brandImage'),
+    cpImage: averageImageMap(cpRows, 'cpImage'),
+    source: 'BrandMonitoring',
+    ...averaged,
+  };
 }
 
 const FUNNEL_STAGES: Array<{ key: keyof BrandMonitoringRow; label: string }> = [
@@ -76,7 +138,7 @@ export function BrandMonitoringTab() {
     [scopedRows, activeYear],
   );
 
-  const cpRow = yearRows.find(isCenterParcs) ?? null;
+  const cpRow = averageCenterParcsRow(yearRows);
   const competitorRows = yearRows.filter((row) => !isCenterParcs(row));
 
   const competitorAverage = (key: keyof BrandMonitoringRow): number | null => {
@@ -121,18 +183,20 @@ export function BrandMonitoringTab() {
     .map((stmt) => ({ statement: stmt, score: cpRow?.cpImage[stmt] ?? 0 }))
     .sort((a, b) => b.score - a.score);
 
-  const noData = brandMonitoringSource === 'not-loaded';
+  const marketInsights = market !== 'all' ? BRAND_MONITOR_INSIGHTS_BY_MARKET[market] : null;
 
   return (
     <div role="tabpanel" id="tabpanel-brand-monitoring" aria-labelledby="tab-brand-monitoring">
       <TabHeader tabId="brand-monitoring" />
 
       <InfoNote tone="warning">
-        Structure proposed from Brand_Monitor_2026_Analysis_1.pdf, an extraction/summary document
-        that explicitly points to a separate "Brand Monitor 2026.xls" for the real KPI numbers -
-        not provided to this prototype. No number below is taken from the PDF; every section is
-        upload-driven and empty until a real Brand Monitoring file is loaded (Data Sources panel
-        above).
+        Brand Health Indicators, Competitor Benchmark and Key Insights below are a validated
+        static extraction from Brand_Monitor_2026_Analysis_1.pdf (Awareness / Consideration /
+        Preference, May 2024-2026, manually transcribed from clearly labeled bars). Brand Image,
+        Center Parcs Image and the Short list/User/Repeater/Loyal funnel stages are NOT included -
+        the PDF's attribute-level charts are too dense to transcribe reliably, so those sections
+        stay an honest empty state. Upload the real Brand Monitor 2026.xls (Data Sources panel
+        above) to replace this extraction and populate every section.
         <br />
         <a className="doc-download-link" href="/docs/Brand_Monitor_2026_Analysis_1.pdf" download>
           <FileDown size={14} aria-hidden="true" /> Download Brand Monitor 2026 (PDF)
@@ -177,25 +241,25 @@ export function BrandMonitoringTab() {
         </FilterBar>
       </SectionPlaceholder>
 
-      {noData || !cpRow ? (
+      {!cpRow ? (
         <SectionPlaceholder
           title="Brand Health Indicators"
           description="Awareness, consideration, preference and usage - loaded per market/year from the Brand Monitoring source."
         >
           <EmptyState
             message="Non applicable"
-            description={
-              noData
-                ? 'No Brand Monitoring file has been loaded yet for any market (Data Sources panel above).'
-                : 'No "Center Parcs" row found for this market/year combination.'
-            }
+            description='No "Center Parcs" row found for this market/year combination.'
           />
         </SectionPlaceholder>
       ) : (
         <>
           <SectionPlaceholder
             title="Brand Health Indicators"
-            description={`Center Parcs, ${market === 'all' ? 'all markets' : MARKET_LABELS[market as Market]} - ${activeYear}.`}
+            description={`Center Parcs, ${market === 'all' ? 'simple average across all 6 markets' : MARKET_LABELS[market as Market]} - ${activeYear} - ${
+              brandMonitoringSource === 'upload'
+                ? 'live upload'
+                : 'validated static extraction from Brand_Monitor_2026_Analysis_1.pdf'
+            }.`}
           >
             <div className="kpi-grid">
               <KpiCard label="Awareness - Total" value={cpRow.awarenessTotal?.toFixed(1) ?? null} unit="%" tone="blue" />
@@ -206,6 +270,40 @@ export function BrandMonitoringTab() {
               <KpiCard label="Preference" value={cpRow.preference?.toFixed(1) ?? null} unit="%" tone="purple" />
               <KpiCard label="Usage" value={cpRow.user?.toFixed(1) ?? null} unit="%" tone="green" />
             </div>
+          </SectionPlaceholder>
+
+          <SectionPlaceholder
+            title="Key Insights"
+            description={
+              market === 'all'
+                ? 'Verbatim from the Brand Monitor 2026 management summary (Europe-wide).'
+                : `Verbatim from the Brand Monitor 2026 management summary - ${MARKET_LABELS[market as Market]}.`
+            }
+          >
+            {market === 'all' ? (
+              <>
+                <ul className="topic-list">
+                  {BRAND_MONITOR_INSIGHTS_EUROPE.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                <p className="filter-note" style={{ marginTop: 10, fontWeight: 600 }}>
+                  Goal remains to consider Center Parcs and book after short listing:
+                </p>
+                <ul className="topic-list">
+                  {BRAND_MONITOR_GOAL_EUROPE.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <>
+                <p className="filter-note" style={{ fontWeight: 600 }}>{marketInsights?.headline}</p>
+                <ul className="topic-list">
+                  {marketInsights?.bullets.map((line) => <li key={line}>{line}</li>)}
+                </ul>
+              </>
+            )}
           </SectionPlaceholder>
 
           <SectionPlaceholder
@@ -228,6 +326,12 @@ export function BrandMonitoringTab() {
             {competitorRows.length === 0 ? (
               <p className="filter-note">No competitor rows loaded for this market/year - competitor average is Non applicable.</p>
             ) : null}
+            {brandMonitoringSource === 'static' ? (
+              <p className="filter-note">
+                Short list / User / Repeater / Loyal are not in this PDF extraction (see the note above) - only
+                Awareness and Consideration are real for this static baseline.
+              </p>
+            ) : null}
           </SectionPlaceholder>
 
           <SectionPlaceholder
@@ -235,7 +339,14 @@ export function BrandMonitoringTab() {
             description="Each Brand Image attribute plotted as Center Parcs score (x) vs competitor average (y). Reference lines at 50%."
           >
             {quadrantData.length === 0 ? (
-              <EmptyState message="Non applicable" description="No Brand Image attribute columns were recognized in the loaded file." />
+              <EmptyState
+                message="Non applicable"
+                description={
+                  brandMonitoringSource === 'static'
+                    ? 'Not included in the PDF extraction (see the note above) - upload Brand Monitor 2026.xls to populate this chart.'
+                    : 'No Brand Image attribute columns were recognized in the loaded file.'
+                }
+              />
             ) : (
               <div style={{ width: '100%', height: 320 }}>
                 <ResponsiveContainer>
@@ -259,7 +370,14 @@ export function BrandMonitoringTab() {
             description="12 reference Brand Image attributes (constants/brandMonitoring.ts), Center Parcs vs competitor average."
           >
             {radarData.length === 0 ? (
-              <EmptyState message="Non applicable" description="No Brand Image attribute columns were recognized in the loaded file." />
+              <EmptyState
+                message="Non applicable"
+                description={
+                  brandMonitoringSource === 'static'
+                    ? 'Not included in the PDF extraction (see the note above) - upload Brand Monitor 2026.xls to populate this chart.'
+                    : 'No Brand Image attribute columns were recognized in the loaded file.'
+                }
+              />
             ) : (
               <div style={{ width: '100%', height: 360 }}>
                 <ResponsiveContainer>
@@ -284,7 +402,14 @@ export function BrandMonitoringTab() {
             description="~24 reference perception statements (constants/brandMonitoring.ts), Center Parcs score, sorted highest first."
           >
             {cpImageData.length === 0 ? (
-              <EmptyState message="Non applicable" description="No Center Parcs Image statement columns were recognized in the loaded file." />
+              <EmptyState
+                message="Non applicable"
+                description={
+                  brandMonitoringSource === 'static'
+                    ? 'Not included in the PDF extraction (see the note above) - upload Brand Monitor 2026.xls to populate this chart.'
+                    : 'No Center Parcs Image statement columns were recognized in the loaded file.'
+                }
+              />
             ) : (
               <div style={{ width: '100%', height: Math.max(240, cpImageData.length * 30) }}>
                 <ResponsiveContainer>
