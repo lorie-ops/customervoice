@@ -7,10 +7,11 @@ import { InfoNote } from '../components/InfoNote';
 import { KpiCard } from '../components/KpiCard';
 import { FilterBar, FilterField } from '../components/FilterBar';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
-import { hotjarRows, mycpPdBreakdownByMarket, themeAnalysisByMarket, themeEnrichmentByMarket } from '../lib/fixtures';
+import { mycpPdBreakdownByMarket, themeAnalysisByMarket, themeEnrichmentByMarket } from '../lib/fixtures';
+import { useDashboardData } from '../state/DataContext';
 import { calculateHotjarAverage } from '../lib/calculations';
 import { formatNps, formatNumber } from '../lib/format';
-import { MYCP_APRIL_2025_NPS_COMPARISON, MYCP_BASELINE_APRIL_2026, MYCP_NPS_TARGET_OKR_EXAMPLE } from '../lib/mycpBaseline';
+import { MYCP_APRIL_2025_NPS_COMPARISON, MYCP_NPS_TARGET_OKR_EXAMPLE } from '../lib/mycpBaseline';
 import type { Market } from '../types';
 
 type Scope = 'mycp' | 'web' | 'both';
@@ -26,12 +27,13 @@ const TREND_ICON = { up: TrendingUp, down: TrendingDown, flat: Minus } as const;
  * Default scope is MyCP only (CLAUDE.md, PROJECT_SPEC.md).
  */
 export function CsatTab() {
+  const { hotjarRows, mycpBaseline, mycpSource } = useDashboardData();
   const [scope, setScope] = useState<Scope>('mycp');
   const [market, setMarket] = useState<MarketFilter>('all');
   const [themeMarket, setThemeMarket] = useState<Market>('DE');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
 
-  const mycpStats = market === 'all' ? MYCP_BASELINE_APRIL_2026.global : MYCP_BASELINE_APRIL_2026.markets[market];
+  const mycpStats = market === 'all' ? mycpBaseline.global : mycpBaseline.markets[market];
   const webScores = hotjarRows
     .filter((row) => market === 'all' || row.country === market)
     .map((row) => row.score);
@@ -40,7 +42,7 @@ export function CsatTab() {
 
   const marketRows = MARKETS.filter((m) => market === 'all' || m === market).map((m) => ({
     market: m,
-    ...MYCP_BASELINE_APRIL_2026.markets[m],
+    ...mycpBaseline.markets[m],
   }));
 
   const distributionData = MARKETS.map((m) => ({
@@ -94,7 +96,11 @@ export function CsatTab() {
 
       <SectionPlaceholder
         title="Global CSAT Scores"
-        description="Validated static MyCP baseline (April 2026), displayed immediately - never derived from a fixture (CLAUDE.md / DATA_MODEL.md)."
+        description={
+          mycpSource === 'upload'
+            ? 'Live MyCP data - all six market files loaded and coherent (docs/BACKLOG.md Phase 6).'
+            : 'Validated static MyCP baseline (April 2026), displayed immediately - never derived from a fixture (CLAUDE.md / DATA_MODEL.md).'
+        }
       >
         <div className="kpi-grid">
           {(scope === 'mycp' || scope === 'both') && (
@@ -295,13 +301,13 @@ export function CsatTab() {
       >
         <div className="report-slide">
           <div className="report-slide__header">
-            <span>MyCP · April 2026</span>
+            <span>MyCP · {mycpSource === 'upload' ? 'Live upload' : 'April 2026'}</span>
             <span>Target OKR (example, to confirm): {formatNps(MYCP_NPS_TARGET_OKR_EXAMPLE)}</span>
           </div>
           <div className="report-slide__body">
             <div>
-              <p className="report-slide__nps">{formatNps(MYCP_BASELINE_APRIL_2026.global.nps)}</p>
-              <p className="filter-note">Average score: {MYCP_BASELINE_APRIL_2026.global.average.toFixed(1)}/10</p>
+              <p className="report-slide__nps">{formatNps(mycpBaseline.global.nps)}</p>
+              <p className="filter-note">Average score: {mycpBaseline.global.average.toFixed(1)}/10</p>
             </div>
           </div>
           <div className="table-scroll">
@@ -317,7 +323,7 @@ export function CsatTab() {
               </thead>
               <tbody>
                 {MARKETS.map((m) => {
-                  const stats = MYCP_BASELINE_APRIL_2026.markets[m];
+                  const stats = mycpBaseline.markets[m];
                   const prevYear = MYCP_APRIL_2025_NPS_COMPARISON[m];
                   const delta = prevYear !== undefined ? stats.nps - prevYear : null;
                   return (

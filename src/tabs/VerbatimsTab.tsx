@@ -3,7 +3,7 @@ import { TabHeader } from '../components/TabHeader';
 import { SectionPlaceholder } from '../components/SectionPlaceholder';
 import { FilterBar, FilterField } from '../components/FilterBar';
 import { EmptyState } from '../components/EmptyState';
-import { crmRows, hotjarRows } from '../lib/fixtures';
+import { useDashboardData } from '../state/DataContext';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
 import { formatDate } from '../lib/format';
 import { isWithinDateRange } from '../lib/dateRange';
@@ -18,6 +18,7 @@ type SentimentFilter = 'all' | 'positive' | 'negative' | 'neutral';
  * (docs/OWNERSHIP_MATRIX.md). Section order follows docs/PROJECT_SPEC.md §2.
  */
 export function VerbatimsTab() {
+  const { hotjarRows, crmRows } = useDashboardData();
   const [search, setSearch] = useState('');
   const [source, setSource] = useState<SourceFilter>('all');
   const [market, setMarket] = useState<MarketFilter>('all');
@@ -38,7 +39,7 @@ export function VerbatimsTab() {
       if (query && !row.message.toLowerCase().includes(query)) return false;
       return true;
     });
-  }, [source, market, sentiment, startDate, endDate, query]);
+  }, [hotjarRows, source, market, sentiment, startDate, endDate, query]);
 
   const filteredCrm = useMemo(() => {
     if (source === 'hotjar') return [];
@@ -50,7 +51,7 @@ export function VerbatimsTab() {
       if (query && !text.includes(query)) return false;
       return true;
     });
-  }, [source, market, sentiment, startDate, endDate, query]);
+  }, [crmRows, source, market, sentiment, startDate, endDate, query]);
 
   return (
     <div role="tabpanel" id="tabpanel-verbatims" aria-labelledby="tab-verbatims">

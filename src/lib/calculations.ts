@@ -1,4 +1,5 @@
-import type { Category, CRMRow, HotjarRow } from '../types';
+import type { Category, CRMRow, HotjarRow, Market, MyCpBaseline, MyCpMarketStats, MyCpRow } from '../types';
+import { MARKETS } from '../constants/markets';
 import { isWithinDateRange, isoWeekLabel } from './dateRange';
 
 /**
@@ -28,15 +29,61 @@ export function calculateMyCpNps(scores: number[]): number | null {
   return ((promoters - detractors) / scores.length) * 100;
 }
 
+/** Plain average of a set of numbers. Scale-agnostic - callers decide what scale they're passing. */
+export function calculateAverageScore(scores: number[]): number | null {
+  if (scores.length === 0) return null;
+  return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+}
+
 /**
  * Average Hotjar score (1-5 scale). Unanswered scores (null/undefined) are
  * excluded from the calculation, not treated as zero. Returns null when no
- * score was answered.
+ * score was answered. Deliberately a separate function from any MyCP
+ * average - never pass Hotjar (1-5) and MyCP (0-10) scores through the
+ * same calculation (mixed-scale protection, docs/BACKLOG.md Phase 7).
  */
 export function calculateHotjarAverage(scores: Array<number | null | undefined>): number | null {
   const answered = scores.filter((score): score is number => score !== null && score !== undefined);
-  if (answered.length === 0) return null;
-  return answered.reduce((sum, score) => sum + score, 0) / answered.length;
+  return calculateAverageScore(answered);
+}
+
+/**
+ * Builds a live MyCpBaseline from real, uploaded MyCP rows (docs/BACKLOG.md
+ * Phase 6) - the same shape as the validated static baseline
+ * (lib/mycpBaseline.ts), but computed. Only meant to be used once all six
+ * markets are loaded (see isMyCpDataCoherent) - the caller is responsible
+ * for that gating, per CLAUDE.md's "Data loading" rules.
+ */
+export function computeMyCpBaselineFromRows(rowsByMarket: Partial<Record<Market, MyCpRow[]>>): MyCpBaseline {
+  const markets = {} as Record<Market, MyCpMarketStats>;
+  const allScores: number[] = [];
+  for (const market of MARKETS) {
+    const scores = (rowsByMarket[market] ?? []).map((row) => row.score);
+    allScores.push(...scores);
+    markets[market] = {
+      responses: scores.length,
+      average: calculateAverageScore(scores) ?? 0,
+      nps: calculateMyCpNps(scores) ?? 0,
+    };
+  }
+  return {
+    global: {
+      responses: allScores.length,
+      average: calculateAverageScore(allScores) ?? 0,
+      nps: calculateMyCpNps(allScores) ?? 0,
+    },
+    markets,
+  };
+}
+
+/**
+ * CLAUDE.md "Data loading": replace static MyCP data only when all six
+ * market files are loaded and the combined row count is coherent. This
+ * prototype defines "coherent" as: all six markets present, each with at
+ * least one row.
+ */
+export function isMyCpDataCoherent(rowsByMarket: Partial<Record<Market, MyCpRow[]>>): boolean {
+  return MARKETS.every((market) => (rowsByMarket[market]?.length ?? 0) > 0);
 }
 
 export type CrmRates = {

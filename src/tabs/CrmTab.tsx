@@ -7,21 +7,23 @@ import { KpiCard } from '../components/KpiCard';
 import { FilterBar, FilterField } from '../components/FilterBar';
 import { EmptyState } from '../components/EmptyState';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
-import { crmActionPlanItems, crmRows } from '../lib/fixtures';
+import { crmActionPlanItems } from '../lib/fixtures';
+import { useDashboardData } from '../state/DataContext';
 import { calculateCrmRates, calculateWeeklyCrmRates, mostFrequentNegativeText } from '../lib/calculations';
 import { latestDate, presetRange } from '../lib/dateRange';
 import { formatDate, formatPercent } from '../lib/format';
 import type { Market } from '../types';
 
-const anchor = latestDate(crmRows.map((row) => row.date));
-
 export function CrmTab() {
+  const { crmRows, crmSource } = useDashboardData();
   const [market, setMarket] = useState<Market>('FR');
   const [campaign, setCampaign] = useState<'all' | string>('all');
 
+  const anchor = useMemo(() => latestDate(crmRows.map((row) => row.date)), [crmRows]);
+
   const campaigns = useMemo(
     () => Array.from(new Set(crmRows.map((row) => row.campaign).filter((c): c is string => Boolean(c)))).sort(),
-    [],
+    [crmRows],
   );
 
   const last7 = presetRange('7d', anchor);
@@ -42,7 +44,7 @@ export function CrmTab() {
           (campaign === 'all' || row.campaign === campaign),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [market, campaign],
+    [crmRows, market, campaign],
   );
   const filteredRates = calculateCrmRates(filteredRows);
   const positiveSignals = filteredRows.filter((row) => row.sentiment === 'positive');
@@ -61,7 +63,7 @@ export function CrmTab() {
 
       <SectionPlaceholder
         title="Global Overview - Last 7 Days of Data"
-        description={`${formatDate(last7.start.toISOString())} to ${formatDate(last7.end.toISOString())} - anchored to the most recent fixture date, not the real calendar date.`}
+        description={`${formatDate(last7.start.toISOString())} to ${formatDate(last7.end.toISOString())} - anchored to the most recent loaded date, not the real calendar date. Source: ${crmSource === 'upload' ? 'uploaded file' : 'local fixture (synthetic)'}.`}
       >
         <div className="kpi-grid">
           <KpiCard label="Total responses" value={last7Rates.total} tone="neutral" />
@@ -72,7 +74,7 @@ export function CrmTab() {
 
       <SectionPlaceholder
         title="Positive vs Negative Rate - Last 30 Days by Week"
-        description="Weekly breakdown, real fixture data grouped by ISO week."
+        description="Weekly breakdown of the loaded CRM data, grouped by ISO week."
       >
         {weeklyRates.length === 0 ? (
           <EmptyState description="No CRM rows in the last 30 days of data." />

@@ -5,11 +5,13 @@ import {
   calculateMyCpNps,
   calculateWeeklyCrmRates,
   calculateWeeklyHotjarAverage,
+  computeMyCpBaselineFromRows,
   countHotjarByCategory,
   getMyCpBucket,
+  isMyCpDataCoherent,
   mostFrequentNegativeText,
 } from './calculations';
-import type { CRMRow, HotjarRow } from '../types';
+import type { CRMRow, HotjarRow, MyCpRow } from '../types';
 
 describe('getMyCpBucket', () => {
   it('classifies 9 and 10 as promoters', () => {
@@ -143,5 +145,47 @@ describe('countHotjarByCategory', () => {
       { category: 'Payment / Price', count: 2 },
       { category: 'Other', count: 1 },
     ]);
+  });
+});
+
+describe('isMyCpDataCoherent', () => {
+  it('is false until all six markets have at least one row', () => {
+    const partial: Partial<Record<MyCpRow['market'], MyCpRow[]>> = {
+      FR: [{ id: '1', date: '2026-04-01', market: 'FR', score: 8, source: 'MyCP' }],
+    };
+    expect(isMyCpDataCoherent(partial)).toBe(false);
+  });
+
+  it('is true once all six markets have rows, including a market with only score-0 rows', () => {
+    const complete: Partial<Record<MyCpRow['market'], MyCpRow[]>> = {
+      FR: [{ id: '1', date: '2026-04-01', market: 'FR', score: 8, source: 'MyCP' }],
+      NL: [{ id: '2', date: '2026-04-01', market: 'NL', score: 9, source: 'MyCP' }],
+      DE: [{ id: '3', date: '2026-04-01', market: 'DE', score: 7, source: 'MyCP' }],
+      BEFR: [{ id: '4', date: '2026-04-01', market: 'BEFR', score: 10, source: 'MyCP' }],
+      BENL: [{ id: '5', date: '2026-04-01', market: 'BENL', score: 6, source: 'MyCP' }],
+      DK: [{ id: '6', date: '2026-04-01', market: 'DK', score: 0, source: 'MyCP' }],
+    };
+    expect(isMyCpDataCoherent(complete)).toBe(true);
+  });
+});
+
+describe('computeMyCpBaselineFromRows', () => {
+  it('does not drop score-0 rows when computing the live baseline', () => {
+    const rows: Partial<Record<MyCpRow['market'], MyCpRow[]>> = {
+      FR: [
+        { id: '1', date: '2026-04-01', market: 'FR', score: 0, source: 'MyCP' },
+        { id: '2', date: '2026-04-02', market: 'FR', score: 10, source: 'MyCP' },
+      ],
+    };
+    const baseline = computeMyCpBaselineFromRows(rows);
+    expect(baseline.markets.FR.responses).toBe(2);
+    expect(baseline.markets.FR.average).toBe(5);
+    expect(baseline.markets.FR.nps).toBe(0); // 1 promoter, 1 detractor (score 0)
+  });
+
+  it('returns zeroed stats for a market with no rows, not a crash', () => {
+    const baseline = computeMyCpBaselineFromRows({});
+    expect(baseline.markets.DK).toEqual({ responses: 0, average: 0, nps: 0 });
+    expect(baseline.global.responses).toBe(0);
   });
 });

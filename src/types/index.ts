@@ -57,6 +57,19 @@ export type CRMRow = {
   journeyStage?: JourneyStage;
 };
 
+/** A single row from a real MyCP XLSX export (docs/DATA_MODEL.md). */
+export type MyCpRow = {
+  id: string;
+  date: string;
+  market: Market;
+  /** 0-10 scale. 0 is a valid detractor score, never dropped. */
+  score: number;
+  sorryVerbatim?: string;
+  improveVerbatim?: string;
+  optimizeVerbatim?: string;
+  source: 'MyCP';
+};
+
 export type MyCpMarketStats = {
   responses: number;
   average: number;

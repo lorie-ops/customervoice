@@ -1,7 +1,6 @@
 import { TreePine } from 'lucide-react';
 import './Header.css';
-import { crmRows, hotjarRows } from '../lib/fixtures';
-import { MYCP_BASELINE_APRIL_2026 } from '../lib/mycpBaseline';
+import { useDashboardData } from '../state/DataContext';
 import { formatDate, formatNumber } from '../lib/format';
 
 type HeaderProps = {
@@ -10,14 +9,16 @@ type HeaderProps = {
 
 /**
  * Global header: brand mark, title, and a subtitle with Hotjar volume,
- * MyCP volume, CRM volume, total signals, and the most recent fixture
- * date (docs/PROJECT_SPEC.md). MyCP volume comes from the validated
- * static baseline, never from a fixture.
+ * MyCP volume, CRM volume, total signals, and the most recent data date
+ * (docs/PROJECT_SPEC.md). Reflects live uploaded data when present
+ * (docs/BACKLOG.md Phase 6), otherwise the local fixtures / validated
+ * static MyCP baseline.
  */
 export function Header({ onBackToJourney }: HeaderProps) {
+  const { hotjarRows, crmRows, mycpBaseline } = useDashboardData();
   const hotjarVolume = hotjarRows.length;
   const crmVolume = crmRows.length;
-  const mycpVolume = MYCP_BASELINE_APRIL_2026.global.responses;
+  const mycpVolume = mycpBaseline.global.responses;
   const totalSignals = hotjarVolume + crmVolume + mycpVolume;
   const lastUpdateIso = [...hotjarRows, ...crmRows].map((row) => row.date).sort().at(-1);
 
@@ -38,7 +39,7 @@ export function Header({ onBackToJourney }: HeaderProps) {
           <p className="cv-header__subtitle">
             Web: {formatNumber(hotjarVolume)} · MyCP: {formatNumber(mycpVolume)} · CRM:{' '}
             {formatNumber(crmVolume)} · Total signals: {formatNumber(totalSignals)}
-            {lastUpdateIso ? ` · Last fixture date: ${formatDate(lastUpdateIso)}` : ''}
+            {lastUpdateIso ? ` · Last data date: ${formatDate(lastUpdateIso)}` : ''}
           </p>
         </div>
       </div>

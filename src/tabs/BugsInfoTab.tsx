@@ -5,7 +5,7 @@ import { InfoNote } from '../components/InfoNote';
 import { KpiCard } from '../components/KpiCard';
 import { FilterBar, FilterField } from '../components/FilterBar';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
-import { hotjarRows } from '../lib/fixtures';
+import { useDashboardData } from '../state/DataContext';
 import {
   DEFAULT_TECHNICAL_ISSUE_ACTION,
   MISSING_INFO_TOPICS,
@@ -22,11 +22,12 @@ type MarketFilter = 'all' | Market;
  * prioritization). Section order follows docs/PROJECT_SPEC.md §2.
  */
 export function BugsInfoTab() {
+  const { hotjarRows } = useDashboardData();
   const [market, setMarket] = useState<MarketFilter>('all');
 
   const scopedRows = useMemo(
     () => hotjarRows.filter((row) => market === 'all' || row.country === market),
-    [market],
+    [hotjarRows, market],
   );
 
   const bugRows = scopedRows.filter((row) => row.category === 'Bug / Technical Error');

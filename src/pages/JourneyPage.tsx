@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, CalendarSearch, CircleCheck, Compass, Flame, Snowflake } from 'lucide-react';
-import { crmRows, hotjarRows, journeyTouchpointsByStage } from '../lib/fixtures';
+import { journeyTouchpointsByStage } from '../lib/fixtures';
+import { useDashboardData } from '../state/DataContext';
 import { calculateCrmRates, calculateHotjarAverage } from '../lib/calculations';
 import { formatPercent } from '../lib/format';
 import { SOURCES } from '../constants/sources';
@@ -28,11 +29,12 @@ type JourneyPageProps = {
  */
 export function JourneyPage({ onEnterDashboard }: JourneyPageProps) {
   const [stage, setStage] = useState<JourneyStage>('during');
+  const { hotjarRows, crmRows } = useDashboardData();
 
   const rowsWithoutStage = useMemo(
     () =>
       hotjarRows.filter((row) => !row.journeyStage).length + crmRows.filter((row) => !row.journeyStage).length,
-    [],
+    [hotjarRows, crmRows],
   );
 
   const stageHotjar = hotjarRows.filter((row) => row.journeyStage === stage);
