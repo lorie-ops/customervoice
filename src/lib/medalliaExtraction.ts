@@ -167,9 +167,14 @@ export const AQUA_MUNDO_MAIN_IRRITANTS: string[] = [
   'Insufficient adult offering - lack of spa/jacuzzi/sauna/hammam and quiet areas for guests without children.',
 ];
 
-/** Source documents available for download from the After Stay tab. */
-export const AFTER_STAY_SOURCE_DOCS: Array<{ label: string; file: string }> = [
-  { label: 'NPS Program - Full Quality Review FY25 (PPTX)', file: 'CPE_NPS_Program_Full_Quality_review_FY25.pptx' },
-  { label: 'Quality Chapter - July 2026 (PPTX)', file: 'CPE_Quality_Chapter_July_26.pptx' },
-  { label: 'Aqua Mundo Behaviours (PPTX)', file: 'Ask_Now__Aqua_Mundo_behaviours.pptx' },
+/**
+ * Source documents available for download from the After Stay tab.
+ * `path` is the full literal path (not just a filename) so it appears
+ * verbatim in the built JS - the same convention as the Brand Monitor
+ * PDF link on the Brand Monitoring tab.
+ */
+export const AFTER_STAY_SOURCE_DOCS: Array<{ label: string; path: string }> = [
+  { label: 'NPS Program - Full Quality Review FY25 (PPTX)', path: '/docs/CPE_NPS_Program_Full_Quality_review_FY25.pptx' },
+  { label: 'Quality Chapter - July 2026 (PPTX)', path: '/docs/CPE_Quality_Chapter_July_26.pptx' },
+  { label: 'Aqua Mundo Behaviours (PPTX)', path: '/docs/Ask_Now__Aqua_Mundo_behaviours.pptx' },
 ];

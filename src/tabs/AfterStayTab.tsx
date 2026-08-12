@@ -74,7 +74,7 @@ export function AfterStayTab() {
         merged with MyCP (docs/DATA_MODEL_ADDENDUM.md §3).
         <br />
         {AFTER_STAY_SOURCE_DOCS.map((doc) => (
-          <a key={doc.file} className="doc-download-link" href={`/docs/${doc.file}`} download style={{ marginRight: 8 }}>
+          <a key={doc.path} className="doc-download-link" href={doc.path} download style={{ marginRight: 8 }}>
             <FileDown size={14} aria-hidden="true" /> {doc.label}
           </a>
         ))}
