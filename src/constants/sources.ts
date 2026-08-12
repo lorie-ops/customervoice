@@ -1,9 +1,7 @@
 /**
  * Real integration status of each data source in this prototype - not a
  * fixture (this is truthful app metadata, not sample data). Used on the
- * Customer Journey entry page. Medallia is intentionally "planned": real
- * aggregated data exists (medallia_aggregated.json) but is not integrated
- * per the non-merge rule (docs/DATA_MODEL_ADDENDUM.md §3).
+ * Customer Journey entry page.
  *
  * Hot/Cold classification: Hot = collected in real time / in-situ during
  * the moment being measured (Web/Hotjar, MyCP, MIA WhatsApp). Cold =
@@ -53,8 +51,8 @@ export const SOURCES: SourceInfo[] = [
   {
     id: 'medallia',
     label: 'Medallia',
-    status: 'planned',
-    note: 'After-stay survey. Real aggregated data exists (21,707 responses, April 2026) but is intentionally not integrated yet - never merged with MyCP.',
+    status: 'available',
+    note: 'After-stay survey. Validated static extraction from a real EQS export (20,894 Center Parcs responses, April 2026) - never merged with MyCP.',
     hotCold: 'cold',
   },
   {

@@ -1,35 +1,45 @@
 import * as XLSX from 'xlsx';
 import { findColumn } from './normalizeHeader';
-import { MARKETS } from '../../constants/markets';
-import type { Market, MedalliaRow } from '../../types';
+import { MEDALLIA_PROPERTY_MARKET } from '../../constants/medalliaProperties';
+import type { MedalliaRow } from '../../types';
 import type { ParseResult } from './hotjarParser';
 
 const ALIASES = {
   id: ['id', 'row id', 'response id'],
-  date: ['date', 'response date', 'survey date'],
-  market: ['market', 'country'],
-  score: ['score', 'nps score', 'recommendation score', 'overall score'],
-  returnIntent: ['return intent', 'would you return', 'intent to return', 'revisit intent'],
-  comment: ['comment', 'verbatim', 'feedback', 'message'],
+  date: ['date', 'responsedate', 'response date'],
+  property: ['property', 'site', 'resort', 'park'],
+  score: ['nps cp', 'score', 'nps score', 'recommendation score', 'total nps'],
+  overallSatisfaction: ['overall satisfaction cp', 'overall satisfaction', 'satisfaction'],
+  returnIntent: ['return intent mark', 'return intent'],
+  checkin: ['checkin general', 'check-in general'],
+  village: ['village general'],
+  cottage: ['cottage comfort', 'cottage general'],
+  aquamundo: ['aquamundo general', 'aqua mundo general'],
+  catering: ['catering general'],
+  comment: ['final comments', 'general impression', 'what went wrong or should be improved?', 'comment'],
 };
 
 const RETURN_INTENT_VALUES: Record<string, MedalliaRow['returnIntent']> = {
-  yes: 'yes',
-  no: 'no',
-  unsure: 'unsure',
-  'not sure': 'unsure',
+  yes: 'Yes',
+  probably: 'Probably',
+  'probably not': 'Probably not',
+  no: 'No',
 };
 
 /**
- * Parses a single-market Medallia (after-stay survey) XLSX/CSV export into
- * MedalliaRow[]. Deliberately its own parser/type, never merged with MyCP
- * (non-merge rule, docs/DATA_MODEL_ADDENDUM.md §3) - same shape convention
- * as mycpParser.ts (0-10 scale, one file per market, in-file market column
- * cross-checked against the upload assignment) but kept structurally
- * separate. Column aliases are this prototype's best guess pending a real
- * export.
+ * Parses a Medallia EQS export into MedalliaRow[].
+ *
+ * Exception like brandMonitoringParser.ts: Medallia is delivered as ONE
+ * file covering all 6 markets (confirmed against a real export -
+ * EQS_extract_April_26_1.xlsx, 21,707 rows), not one file per market.
+ * The export has no market column of its own - market is derived from
+ * the row's "Property" (resort) via constants/medalliaProperties.ts,
+ * since Belgium's BEFR/BENL split depends on which specific resort the
+ * response is about. Column aliases match that real export's headers
+ * (see lib/medalliaExtraction.ts for the same file's aggregate numbers).
+ * Never merged with MyCP (non-merge rule, docs/DATA_MODEL_ADDENDUM.md §3).
  */
-export function parseMedalliaWorkbook(data: ArrayBuffer, market: Market): ParseResult<MedalliaRow> {
+export function parseMedalliaWorkbook(data: ArrayBuffer): ParseResult<MedalliaRow> {
   const warnings: string[] = [];
   const workbook = XLSX.read(data, { type: 'array' });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -42,32 +52,42 @@ export function parseMedalliaWorkbook(data: ArrayBuffer, market: Market): ParseR
   const cols = {
     id: findColumn(raw[0], ALIASES.id),
     date: findColumn(raw[0], ALIASES.date),
-    market: findColumn(raw[0], ALIASES.market),
+    property: findColumn(raw[0], ALIASES.property),
     score: findColumn(raw[0], ALIASES.score),
+    overallSatisfaction: findColumn(raw[0], ALIASES.overallSatisfaction),
     returnIntent: findColumn(raw[0], ALIASES.returnIntent),
+    checkin: findColumn(raw[0], ALIASES.checkin),
+    village: findColumn(raw[0], ALIASES.village),
+    cottage: findColumn(raw[0], ALIASES.cottage),
+    aquamundo: findColumn(raw[0], ALIASES.aquamundo),
+    catering: findColumn(raw[0], ALIASES.catering),
     comment: findColumn(raw[0], ALIASES.comment),
   };
 
-  if (!cols.date || !cols.score) {
+  if (!cols.date || !cols.score || !cols.property) {
     warnings.push(
-      `Could not find required columns (date, score) by header name. Detected headers: ${Object.keys(raw[0]).join(', ')}`,
+      `Could not find required columns (date, property, score) by header name. Detected headers: ${Object.keys(raw[0]).join(', ')}`,
     );
     return { rows: [], warnings };
   }
 
+  const numOrUndefined = (value: unknown): number | undefined => {
+    if (value === null || value === undefined || value === '') return undefined;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : undefined;
+  };
+
   const rows: MedalliaRow[] = [];
   raw.forEach((record, index) => {
-    if (cols.market) {
-      const inFileMarket = String(record[cols.market] ?? '').trim().toUpperCase();
-      if (inFileMarket && MARKETS.includes(inFileMarket as Market) && inFileMarket !== market) {
-        warnings.push(`Row ${index + 2}: file market column says "${inFileMarket}" but this file was assigned to ${market} - skipped.`);
-        return;
-      }
+    const property = String(record[cols.property!] ?? '').trim();
+    const market = MEDALLIA_PROPERTY_MARKET[property];
+    if (!market) {
+      warnings.push(`Row ${index + 2}: unrecognized property "${property}" - not in constants/medalliaProperties.ts, skipped.`);
+      return;
     }
     const date = String(record[cols.date!] ?? '').trim();
-    const rawScore = record[cols.score!];
-    const score = rawScore === null || rawScore === undefined || rawScore === '' ? null : Number(rawScore);
-    if (!date || score === null || !Number.isFinite(score)) {
+    const score = numOrUndefined(record[cols.score!]);
+    if (!date || score === undefined) {
       warnings.push(`Row ${index + 2}: missing date or score - skipped.`);
       return;
     }
@@ -77,11 +97,18 @@ export function parseMedalliaWorkbook(data: ArrayBuffer, market: Market): ParseR
       warnings.push(`Row ${index + 2}: unrecognized return intent "${rawIntent}" - left unset.`);
     }
     rows.push({
-      id: cols.id ? String(record[cols.id] ?? `medallia-${market}-${index}`) : `medallia-${market}-${index}`,
+      id: cols.id ? String(record[cols.id] ?? `medallia-${index}`) : `medallia-${index}`,
       date,
       market,
+      property,
       score,
+      overallSatisfaction: cols.overallSatisfaction ? numOrUndefined(record[cols.overallSatisfaction]) : undefined,
       returnIntent,
+      checkin: cols.checkin ? numOrUndefined(record[cols.checkin]) : undefined,
+      village: cols.village ? numOrUndefined(record[cols.village]) : undefined,
+      cottage: cols.cottage ? numOrUndefined(record[cols.cottage]) : undefined,
+      aquamundo: cols.aquamundo ? numOrUndefined(record[cols.aquamundo]) : undefined,
+      catering: cols.catering ? numOrUndefined(record[cols.catering]) : undefined,
       comment: cols.comment ? String(record[cols.comment] ?? '') || undefined : undefined,
       source: 'Medallia',
     });

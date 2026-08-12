@@ -149,9 +149,9 @@ export function DataLoaderPanel() {
     data.setMyCpMarketRows(market, rows, warnings);
   }
 
-  async function handleMedalliaFile(market: Market, file: File) {
-    const { rows, warnings } = parseMedalliaWorkbook(await file.arrayBuffer(), market);
-    data.setMedalliaMarketRows(market, rows, warnings);
+  async function handleMedalliaFile(file: File) {
+    const { rows, warnings } = parseMedalliaWorkbook(await file.arrayBuffer());
+    data.setMedalliaRows(rows, warnings);
   }
 
   async function handleBrandMonitoringFile(file: File) {
@@ -167,8 +167,8 @@ export function DataLoaderPanel() {
           Data sources: Web {data.hotjarSource === 'upload' ? `live upload (${data.hotjarRows.length})` : 'fixture'} · MyCP{' '}
           {data.mycpSource === 'upload' ? 'live upload (6/6 markets)' : 'validated static baseline'} · CRM{' '}
           {data.crmSource === 'upload' ? `live upload (${data.crmRows.length})` : 'fixture'} · Brand Monitoring{' '}
-          {data.brandMonitoringSource === 'upload' ? `live upload (${data.brandMonitoringRows.length} rows)` : 'validated PDF extraction'} · Medallia{' '}
-          {data.medalliaSource === 'not-loaded' ? 'not connected' : `${data.medalliaRows.length} rows`}
+          {data.brandMonitoringSource === 'upload' ? `live upload (${data.brandMonitoringRows.length} rows)` : 'validated PDF extraction'} · After Stay (Medallia){' '}
+          {data.medalliaSource === 'upload' ? `live upload (${data.medalliaRows.length} rows)` : 'validated EQS extraction'}
         </span>
         {open ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
       </button>
@@ -248,21 +248,20 @@ export function DataLoaderPanel() {
             onFile={handleBrandMonitoringFile}
           />
 
-          <SourceMarketGrid
+          <SingleFileUpload
             title="Medallia (after stay survey)"
             statusLine={
-              data.medalliaSource === 'not-loaded'
-                ? 'no market connected yet - planned source, never merged with MyCP'
-                : `${data.medalliaSource === 'complete' ? 'all 6' : 'some'} markets loaded`
+              data.medalliaSource === 'static'
+                ? 'validated static extraction from a real EQS export, active until a real file is uploaded - never merged with MyCP'
+                : `live upload active - ${data.medalliaRows.length} rows across all markets`
             }
-            getStatus={(market) => {
-              const rows = data.medalliaRowsByMarket[market];
-              return {
-                loaded: Boolean(rows),
-                detail: rows ? `${rows.length} rows` : 'Not loaded',
-                warnings: data.medalliaWarningsByMarket[market],
-              };
-            }}
+            loaded={data.medalliaSource === 'upload'}
+            detail={
+              data.medalliaSource === 'upload'
+                ? `Uploaded - ${data.medalliaRows.length} rows`
+                : `${data.medalliaBaseline.global.responses} rows (validated EQS extraction)`
+            }
+            warnings={data.medalliaWarnings}
             onFile={handleMedalliaFile}
           />
 

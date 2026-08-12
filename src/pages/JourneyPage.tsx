@@ -8,7 +8,7 @@ import {
   calculateHotjarAverage,
   calculateMyCpNps,
 } from '../lib/calculations';
-import { formatNps, formatPercent } from '../lib/format';
+import { formatNps, formatNumber, formatPercent } from '../lib/format';
 import { SOURCES } from '../constants/sources';
 import { DEFAULT_TOUCHPOINT_ICON, TOUCHPOINT_ICONS } from '../constants/touchpointIcons';
 import type { JourneyStage } from '../types';
@@ -34,7 +34,7 @@ type JourneyPageProps = {
  */
 export function JourneyPage({ onEnterDashboard }: JourneyPageProps) {
   const [stage, setStage] = useState<JourneyStage>('during');
-  const { hotjarRows, crmRows, mycpRows, medalliaRows } = useDashboardData();
+  const { hotjarRows, crmRows, mycpRows, medalliaBaseline, medalliaSource } = useDashboardData();
 
   const rowsWithoutStage = useMemo(
     () =>
@@ -50,8 +50,9 @@ export function JourneyPage({ onEnterDashboard }: JourneyPageProps) {
   const stageMyCpAverage = calculateAverageScore(stageMyCp.map((row) => row.score));
   const stageMyCpNps = calculateMyCpNps(stageMyCp.map((row) => row.score));
   // Medallia is an after-stay survey by definition (docs/DATA_MODEL_ADDENDUM.md
-  // §3) - it has no journeyStage of its own, so its card only applies at 'after'.
-  const medalliaAverage = calculateAverageScore(medalliaRows.map((row) => row.score));
+  // §3) - it has no journeyStage of its own (every response is "after"), so its
+  // card reads the global baseline directly rather than filtering by stage.
+  const medalliaAverage = medalliaBaseline.global.average;
 
   const activeStage = STAGES.find((s) => s.id === stage)!;
   const touchpoints = journeyTouchpointsByStage[stage] ?? [];
@@ -109,9 +110,9 @@ export function JourneyPage({ onEnterDashboard }: JourneyPageProps) {
             {
               key: 'medallia',
               label: `Medallia - ${activeStage.label}`,
-              value: medalliaAverage !== null ? medalliaAverage.toFixed(1) : null,
+              value: medalliaAverage.toFixed(1),
               unit: ' / 10',
-              footnote: medalliaAverage !== null ? `${medalliaRows.length} rows loaded` : 'Planned source - not connected yet (see Data Sources panel).',
+              footnote: `${formatNumber(medalliaBaseline.global.responses)} responses · ${medalliaSource === 'upload' ? 'live upload' : 'validated EQS extraction'}`,
               tone: 'blue',
             },
           ];

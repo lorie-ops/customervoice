@@ -72,18 +72,31 @@ export type MyCpRow = {
 };
 
 /**
- * A single row from a real Medallia XLSX export - the after-stay survey
- * (docs/DATA_MODEL_ADDENDUM.md §3). Deliberately its own type, never
- * merged with MyCpRow: different population and collection timing
- * (non-merge rule).
+ * A single row from a real Medallia XLSX export (EQS extract) - the
+ * after-stay survey (docs/DATA_MODEL_ADDENDUM.md §3). Deliberately its
+ * own type, never merged with MyCpRow: different population and
+ * collection timing (non-merge rule). Field names/shape match the real
+ * export: one file for ALL markets (exception, like BrandMonitoringRow -
+ * market comes from the row's own Site Country/Property, not an
+ * upload-slot assignment), category sub-scores are optional since not
+ * every respondent answers every section.
  */
 export type MedalliaRow = {
   id: string;
   date: string;
   market: Market;
-  /** 0-10 scale, same convention as MyCP, but never combined with MyCP's NPS/average. */
+  property?: string;
+  /** 0-10 "how likely to recommend" score used for NPS - never combined with MyCP's NPS/average. */
   score: number;
-  returnIntent?: 'yes' | 'no' | 'unsure';
+  /** 0-10 overall satisfaction - a separate metric from the recommendation score above. */
+  overallSatisfaction?: number;
+  returnIntent?: 'Yes' | 'Probably' | 'Probably not' | 'No';
+  /** 0-10 category sub-scores (real EQS column names: "Checkin general", "Village general", etc.). */
+  checkin?: number;
+  village?: number;
+  cottage?: number;
+  aquamundo?: number;
+  catering?: number;
   comment?: string;
   source: 'Medallia';
 };

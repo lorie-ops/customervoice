@@ -1,4 +1,4 @@
-import { Bug, ChartColumn, ChartPie, Compass, Mail, MessageSquareText, TrendingUp } from 'lucide-react';
+import { Bug, ChartColumn, ChartPie, Compass, Mail, MessageSquareText, TrendingUp, Waves } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 /**
@@ -14,7 +14,7 @@ import type { LucideIcon } from 'lucide-react';
 
 export type OwnerRole = 'CRM' | 'Product' | 'Marketing' | 'Design';
 
-export type TabId = 'overview' | 'brand-monitoring' | 'web' | 'crm' | 'mycp' | 'bugs-info' | 'verbatims';
+export type TabId = 'overview' | 'brand-monitoring' | 'web' | 'crm' | 'mycp' | 'after-stay' | 'bugs-info' | 'verbatims';
 
 export type TabOwnership = {
   id: TabId;
@@ -45,9 +45,9 @@ export const TAB_OWNERSHIP: Record<TabId, TabOwnership> = {
     id: 'web',
     label: 'Web',
     icon: Compass,
-    ownerSubtitle: 'Owner: Marketing / Customer insight lead',
+    ownerSubtitle: 'Owner: Product Manager (scope)',
     ownerTooltip:
-      'Primary owner: Marketing / Customer insight lead (in-situ website satisfaction, Hotjar). Contributors: Product (technical items in verbatims).',
+      'Primary owner: Product Manager for this scope (in-situ website satisfaction, Hotjar). Contributors: Marketing / Customer insight lead.',
   },
   crm: {
     id: 'crm',
@@ -61,9 +61,17 @@ export const TAB_OWNERSHIP: Record<TabId, TabOwnership> = {
     id: 'mycp',
     label: 'MyCP',
     icon: ChartPie,
-    ownerSubtitle: 'Owner: Marketing / Customer insight lead',
+    ownerSubtitle: 'Owner: Product Manager (scope)',
     ownerTooltip:
-      'Primary owner: Marketing / Customer insight lead (monthly satisfaction reporting). Contributors: Product (technical items in verbatims).',
+      'Primary owner: Product Manager for this scope (monthly satisfaction reporting). Contributors: Marketing / Customer insight lead.',
+  },
+  'after-stay': {
+    id: 'after-stay',
+    label: 'After Stay',
+    icon: Waves,
+    ownerSubtitle: 'Owner: Product Manager (scope)',
+    ownerTooltip:
+      'Primary owner: Product Manager for this scope (post-stay satisfaction, Medallia). Assumption pending confirmation - flag if a different owner applies.',
   },
   'bugs-info': {
     id: 'bugs-info',
@@ -83,7 +91,7 @@ export const TAB_OWNERSHIP: Record<TabId, TabOwnership> = {
   },
 };
 
-export const TAB_ORDER: TabId[] = ['overview', 'brand-monitoring', 'web', 'crm', 'mycp', 'bugs-info', 'verbatims'];
+export const TAB_ORDER: TabId[] = ['overview', 'brand-monitoring', 'web', 'crm', 'mycp', 'after-stay', 'bugs-info', 'verbatims'];
 
 /**
  * The Design lead has no dedicated tab, but validates visual consistency

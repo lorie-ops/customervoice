@@ -1,7 +1,9 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { hotjarRows as fixtureHotjarRows, crmRows as fixtureCrmRows } from '../lib/fixtures';
 import { MYCP_BASELINE_APRIL_2026 } from '../lib/mycpBaseline';
-import { computeMyCpBaselineFromRows, isMyCpDataCoherent } from '../lib/calculations';
+import { MEDALLIA_BASELINE_APRIL_2026 } from '../lib/medalliaExtraction';
+import type { MedalliaBaseline } from '../lib/medalliaExtraction';
+import { computeMedalliaBaselineFromRows, computeMyCpBaselineFromRows, isMyCpDataCoherent } from '../lib/calculations';
 import { buildStaticBrandMonitoringRows } from '../lib/brandMonitorExtraction';
 import { MARKETS } from '../constants/markets';
 import type {
@@ -15,11 +17,10 @@ import type {
 } from '../types';
 
 type SourceState = 'fixture' | 'upload';
-/** Upload-only, per-market source with no fixture/baseline fallback (Medallia). */
-type UploadState = 'not-loaded' | 'partial' | 'complete';
-/** Single-file-for-all-markets source (Brand Monitoring - business exception). Starts on
- * the validated PDF-extraction baseline (lib/brandMonitorExtraction.ts), same "display
- * validated static data immediately" pattern as MyCP - replaced only by a real upload. */
+/** Single-file-for-all-markets source (Brand Monitoring/Medallia - business exception,
+ * confirmed against real exports for both). Starts on a validated static extraction
+ * (lib/brandMonitorExtraction.ts, lib/medalliaExtraction.ts), same "display validated
+ * static data immediately" pattern as MyCP - replaced only by a real upload. */
 type SingleFileUploadState = 'static' | 'upload';
 
 type ByMarket<T> = Partial<Record<Market, T[]>>;
@@ -32,13 +33,6 @@ function groupByMarket<T>(rows: T[], marketOf: (row: T) => Market): ByMarket<T> 
 
 function flatten<T>(byMarket: ByMarket<T>): T[] {
   return MARKETS.flatMap((market) => byMarket[market] ?? []);
-}
-
-function computeUploadState<T>(byMarket: ByMarket<T>): UploadState {
-  const loadedCount = MARKETS.filter((market) => (byMarket[market]?.length ?? 0) > 0).length;
-  if (loadedCount === 0) return 'not-loaded';
-  if (loadedCount === MARKETS.length) return 'complete';
-  return 'partial';
 }
 
 function allFixtureSource(): Record<Market, SourceState> {
@@ -64,10 +58,11 @@ type DataState = {
   mycpBaseline: MyCpBaseline;
   mycpSource: 'static' | 'upload';
 
-  medalliaRowsByMarket: ByMarket<MedalliaRow>;
-  medalliaWarningsByMarket: ByMarket<string>;
+  /** Exception: one file for all 6 markets, confirmed against a real export - not one per market. */
   medalliaRows: MedalliaRow[];
-  medalliaSource: UploadState;
+  medalliaWarnings: string[];
+  medalliaSource: SingleFileUploadState;
+  medalliaBaseline: MedalliaBaseline;
 
   /** Exception: one file for all 6 markets (business feedback), not one per market. */
   brandMonitoringRows: BrandMonitoringRow[];
@@ -79,7 +74,8 @@ type DataActions = {
   setHotjarMarketRows: (market: Market, rows: HotjarRow[], warnings: string[]) => void;
   setCrmMarketRows: (market: Market, rows: CRMRow[], warnings: string[]) => void;
   setMyCpMarketRows: (market: Market, rows: MyCpRow[], warnings: string[]) => void;
-  setMedalliaMarketRows: (market: Market, rows: MedalliaRow[], warnings: string[]) => void;
+  /** Single-file setter (exception - see medalliaRows above). */
+  setMedalliaRows: (rows: MedalliaRow[], warnings: string[]) => void;
   /** Single-file setter (exception - see brandMonitoringRows above). */
   setBrandMonitoringRows: (rows: BrandMonitoringRow[], warnings: string[]) => void;
   resetToFixtures: () => void;
@@ -101,14 +97,13 @@ const initialCrmByMarket = () => groupByMarket(fixtureCrmRows, (row) => row.mark
  * - MyCP: the static, validated April 2026 baseline stays active until all
  *   six market files are loaded and coherent (CLAUDE.md "Data loading"
  *   rules) - unchanged from Phase 6.
- * - Medallia: new source, no fixture and no static baseline - starts
- *   empty ("not-loaded") and accumulates per-market uploads. Never merged
- *   with MyCP (non-merge rule, docs/DATA_MODEL_ADDENDUM.md §3).
- * - Brand Monitoring: delivered as ONE file covering all 6 markets
- *   (business exception, unlike every other source here) - a single flat
- *   upload, not a per-market map. Displays the validated static
- *   extraction from Brand_Monitor_2026_Analysis_1.pdf immediately
- *   (lib/brandMonitorExtraction.ts), replaced only by a real upload.
+ * - Medallia/Brand Monitoring: both delivered as ONE file covering all 6
+ *   markets (business exception, confirmed against real exports for
+ *   both - unlike every other source here), not a per-market map.
+ *   Display a validated static extraction immediately
+ *   (lib/medalliaExtraction.ts, lib/brandMonitorExtraction.ts), replaced
+ *   only by a real upload. Medallia is never merged with MyCP (non-merge
+ *   rule, docs/DATA_MODEL_ADDENDUM.md §3).
  */
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hotjarRowsByMarket, setHotjarRowsByMarket] = useState<ByMarket<HotjarRow>>(initialHotjarByMarket);
@@ -122,8 +117,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [mycpRowsByMarket, setMycpRowsByMarket] = useState<ByMarket<MyCpRow>>({});
   const [mycpWarningsByMarket, setMycpWarningsByMarket] = useState<ByMarket<string>>({});
 
-  const [medalliaRowsByMarket, setMedalliaRowsByMarket] = useState<ByMarket<MedalliaRow>>({});
-  const [medalliaWarningsByMarket, setMedalliaWarningsByMarket] = useState<ByMarket<string>>({});
+  const [medalliaRows, setMedalliaRowsState] = useState<MedalliaRow[]>([]);
+  const [medalliaWarnings, setMedalliaWarnings] = useState<string[]>([]);
+  const [medalliaSource, setMedalliaSource] = useState<SingleFileUploadState>('static');
 
   const [brandMonitoringRows, setBrandMonitoringRowsState] = useState<BrandMonitoringRow[]>(buildStaticBrandMonitoringRows);
   const [brandMonitoringWarnings, setBrandMonitoringWarnings] = useState<string[]>([]);
@@ -142,8 +138,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [mycpCoherent, mycpRowsByMarket],
   );
 
-  const medalliaRows = useMemo(() => flatten(medalliaRowsByMarket), [medalliaRowsByMarket]);
-  const medalliaSource = useMemo(() => computeUploadState(medalliaRowsByMarket), [medalliaRowsByMarket]);
+  const medalliaBaseline = useMemo(
+    () => (medalliaSource === 'upload' ? computeMedalliaBaselineFromRows(medalliaRows) : MEDALLIA_BASELINE_APRIL_2026),
+    [medalliaSource, medalliaRows],
+  );
 
   const value: DataState & DataActions = {
     hotjarRowsByMarket,
@@ -164,10 +162,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     mycpBaseline,
     mycpSource: mycpCoherent ? 'upload' : 'static',
 
-    medalliaRowsByMarket,
-    medalliaWarningsByMarket,
     medalliaRows,
+    medalliaWarnings,
     medalliaSource,
+    medalliaBaseline,
 
     brandMonitoringRows,
     brandMonitoringWarnings,
@@ -187,9 +185,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setMycpRowsByMarket((prev) => ({ ...prev, [market]: rows }));
       setMycpWarningsByMarket((prev) => ({ ...prev, [market]: warnings }));
     },
-    setMedalliaMarketRows: (market, rows, warnings) => {
-      setMedalliaRowsByMarket((prev) => ({ ...prev, [market]: rows }));
-      setMedalliaWarningsByMarket((prev) => ({ ...prev, [market]: warnings }));
+    setMedalliaRows: (rows, warnings) => {
+      setMedalliaRowsState(rows);
+      setMedalliaWarnings(warnings);
+      setMedalliaSource('upload');
     },
     setBrandMonitoringRows: (rows, warnings) => {
       setBrandMonitoringRowsState(rows);
@@ -205,8 +204,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setCrmWarningsByMarket({});
       setMycpRowsByMarket({});
       setMycpWarningsByMarket({});
-      setMedalliaRowsByMarket({});
-      setMedalliaWarningsByMarket({});
+      setMedalliaRowsState([]);
+      setMedalliaWarnings([]);
+      setMedalliaSource('static');
       setBrandMonitoringRowsState(buildStaticBrandMonitoringRows());
       setBrandMonitoringWarnings([]);
       setBrandMonitoringSource('static');

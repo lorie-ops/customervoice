@@ -7,6 +7,7 @@ import { BrandMonitoringTab } from './tabs/BrandMonitoringTab';
 import { WebTab } from './tabs/WebTab';
 import { CrmTab } from './tabs/CrmTab';
 import { MyCpTab } from './tabs/MyCpTab';
+import { AfterStayTab } from './tabs/AfterStayTab';
 import { BugsInfoTab } from './tabs/BugsInfoTab';
 import { VerbatimsTab } from './tabs/VerbatimsTab';
 import { JourneyPage } from './pages/JourneyPage';
@@ -35,6 +36,7 @@ function App() {
             {activeTab === 'web' && <WebTab />}
             {activeTab === 'crm' && <CrmTab />}
             {activeTab === 'mycp' && <MyCpTab />}
+            {activeTab === 'after-stay' && <AfterStayTab />}
             {activeTab === 'bugs-info' && <BugsInfoTab />}
             {activeTab === 'verbatims' && <VerbatimsTab />}
           </main>

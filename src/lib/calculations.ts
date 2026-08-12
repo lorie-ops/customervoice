@@ -1,5 +1,6 @@
-import type { Category, CRMRow, HotjarRow, Market, MyCpBaseline, MyCpMarketStats, MyCpRow } from '../types';
+import type { Category, CRMRow, HotjarRow, Market, MedalliaRow, MyCpBaseline, MyCpMarketStats, MyCpRow } from '../types';
 import { MARKETS } from '../constants/markets';
+import type { MedalliaBaseline, MedalliaCategoryScores, MedalliaMarketStats } from './medalliaExtraction';
 import { isWithinDateRange, isoWeekLabel } from './dateRange';
 
 /**
@@ -84,6 +85,85 @@ export function computeMyCpBaselineFromRows(rowsByMarket: Partial<Record<Market,
  */
 export function isMyCpDataCoherent(rowsByMarket: Partial<Record<Market, MyCpRow[]>>): boolean {
   return MARKETS.every((market) => (rowsByMarket[market]?.length ?? 0) > 0);
+}
+
+const RETURN_INTENT_KEYS = ['yes', 'probably', 'probablyNot', 'no'] as const;
+
+/**
+ * Builds a live MedalliaBaseline from real, uploaded Medallia rows - same
+ * shape as the static extraction (lib/medalliaExtraction.ts), computed
+ * from row-level data. Never merged with MyCP (non-merge rule).
+ */
+export function computeMedalliaBaselineFromRows(rows: MedalliaRow[]): MedalliaBaseline {
+  const marketStatsOf = (marketRows: MedalliaRow[]): MedalliaMarketStats => {
+    const scores = marketRows.map((row) => row.score);
+    const satisfactionScores = marketRows
+      .map((row) => row.overallSatisfaction)
+      .filter((v): v is number => v !== undefined);
+    const intentCounts = { yes: 0, probably: 0, probablyNot: 0, no: 0 };
+    let intentTotal = 0;
+    for (const row of marketRows) {
+      if (!row.returnIntent) continue;
+      intentTotal += 1;
+      if (row.returnIntent === 'Yes') intentCounts.yes += 1;
+      else if (row.returnIntent === 'Probably') intentCounts.probably += 1;
+      else if (row.returnIntent === 'Probably not') intentCounts.probablyNot += 1;
+      else if (row.returnIntent === 'No') intentCounts.no += 1;
+    }
+    const returnIntent = { yes: 0, probably: 0, probablyNot: 0, no: 0 };
+    if (intentTotal > 0) {
+      for (const key of RETURN_INTENT_KEYS) {
+        returnIntent[key] = (intentCounts[key] / intentTotal) * 100;
+      }
+    }
+    return {
+      responses: scores.length,
+      average: calculateAverageScore(scores) ?? 0,
+      nps: calculateMyCpNps(scores) ?? 0,
+      overallSatisfaction: calculateAverageScore(satisfactionScores) ?? 0,
+      returnIntent,
+    };
+  };
+
+  const categoryStatsOf = (marketRows: MedalliaRow[]): MedalliaCategoryScores => ({
+    checkin: calculateAverageScore(marketRows.map((r) => r.checkin).filter((v): v is number => v !== undefined)) ?? 0,
+    village: calculateAverageScore(marketRows.map((r) => r.village).filter((v): v is number => v !== undefined)) ?? 0,
+    cottage: calculateAverageScore(marketRows.map((r) => r.cottage).filter((v): v is number => v !== undefined)) ?? 0,
+    aquamundo: calculateAverageScore(marketRows.map((r) => r.aquamundo).filter((v): v is number => v !== undefined)) ?? 0,
+    catering: calculateAverageScore(marketRows.map((r) => r.catering).filter((v): v is number => v !== undefined)) ?? 0,
+  });
+
+  const markets = {} as Record<Market, MedalliaMarketStats>;
+  const categoriesByMarket = {} as Record<Market, MedalliaCategoryScores>;
+  for (const market of MARKETS) {
+    const marketRows = rows.filter((row) => row.market === market);
+    markets[market] = marketStatsOf(marketRows);
+    categoriesByMarket[market] = categoryStatsOf(marketRows);
+  }
+
+  return {
+    global: marketStatsOf(rows),
+    markets,
+    categoriesGlobal: categoryStatsOf(rows),
+    categoriesByMarket,
+  };
+}
+
+export type WeeklyMedalliaPoint = { week: string; average: number | null; nps: number | null; count: number };
+
+/** Weekly Medallia average/NPS (0-10 scale), grouped by ISO week of `date`. Never combined with MyCP. */
+export function calculateWeeklyMedalliaTrend(rows: MedalliaRow[]): WeeklyMedalliaPoint[] {
+  const byWeek = new Map<string, MedalliaRow[]>();
+  for (const row of rows) {
+    const week = isoWeekLabel(row.date);
+    byWeek.set(week, [...(byWeek.get(week) ?? []), row]);
+  }
+  return Array.from(byWeek.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([week, weekRows]) => {
+      const scores = weekRows.map((row) => row.score);
+      return { week, average: calculateAverageScore(scores), nps: calculateMyCpNps(scores), count: scores.length };
+    });
 }
 
 export type CrmRates = {

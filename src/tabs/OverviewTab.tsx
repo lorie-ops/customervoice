@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { TabHeader } from '../components/TabHeader';
 import { SectionPlaceholder } from '../components/SectionPlaceholder';
 import { InfoNote } from '../components/InfoNote';
@@ -13,8 +13,10 @@ import {
   calculateHotjarAverage,
   calculateWeeklyCrmRates,
   calculateWeeklyHotjarAverage,
+  calculateWeeklyMedalliaTrend,
   countHotjarByCategory,
 } from '../lib/calculations';
+import { MEDALLIA_WEEKLY_TREND } from '../lib/medalliaExtraction';
 import { formatDate, formatNps, formatPercent } from '../lib/format';
 import { latestDate } from '../lib/dateRange';
 import { MARKETS, MARKET_LABELS } from '../constants/markets';
@@ -28,7 +30,7 @@ type ScopeFilter = 'all' | 'web' | 'mycp' | 'crm' | 'post-stay';
 type MarketFilter = 'all' | Market;
 
 export function OverviewTab() {
-  const { hotjarRows: allHotjarRows, crmRows: allCrmRows, mycpBaseline } = useDashboardData();
+  const { hotjarRows: allHotjarRows, crmRows: allCrmRows, mycpBaseline, medalliaRows, medalliaBaseline, medalliaSource } = useDashboardData();
 
   const [market, setMarket] = useState<MarketFilter>('all');
   const [source, setSource] = useState<SourceFilter>('all');
@@ -67,14 +69,29 @@ export function OverviewTab() {
 
   const weeklyWeb = useMemo(() => calculateWeeklyHotjarAverage(hotjarRows), [hotjarRows]);
   const weeklyCrm = useMemo(() => calculateWeeklyCrmRates(crmRows), [crmRows]);
+  // After Stay (Medallia): real weekly NPS, either from a live upload (filtered by the
+  // Market selector like every other source here) or the static EQS extraction's own
+  // weekly series (global only - that extraction has no per-market weekly breakdown).
+  const weeklyMedallia = useMemo(() => {
+    if (medalliaSource === 'upload') {
+      const scoped = market === 'all' ? medalliaRows : medalliaRows.filter((row) => row.market === market);
+      return calculateWeeklyMedalliaTrend(scoped);
+    }
+    return MEDALLIA_WEEKLY_TREND;
+  }, [medalliaSource, medalliaRows, market]);
+  const mycpStatsForTrend = market === 'all' ? mycpBaseline.global : mycpBaseline.markets[market];
+  const medalliaStatsForTrend = market === 'all' ? medalliaBaseline.global : medalliaBaseline.markets[market];
   const weeklyTrend = useMemo(() => {
-    const weeks = Array.from(new Set([...weeklyWeb.map((w) => w.week), ...weeklyCrm.map((w) => w.week)])).sort();
+    const weeks = Array.from(
+      new Set([...weeklyWeb.map((w) => w.week), ...weeklyCrm.map((w) => w.week), ...weeklyMedallia.map((w) => w.week)]),
+    ).sort();
     return weeks.map((week) => ({
       week,
       webAverage: weeklyWeb.find((w) => w.week === week)?.average ?? null,
       crmPositiveRate: weeklyCrm.find((w) => w.week === week)?.positiveRate ?? null,
+      medalliaNps: weeklyMedallia.find((w) => w.week === week)?.nps ?? null,
     }));
-  }, [weeklyWeb, weeklyCrm]);
+  }, [weeklyWeb, weeklyCrm, weeklyMedallia]);
 
   const [periodAStart, setPeriodAStart] = useState(() => toInputDate(subDays(new Date(anchor), 29)));
   const [periodAEnd, setPeriodAEnd] = useState(() => toInputDate(subDays(new Date(anchor), 15)));
@@ -132,18 +149,19 @@ export function OverviewTab() {
 
       <SectionPlaceholder
         title="Last Month Trends"
-        description="Weekly trend across the full loaded data span, Web and CRM on one chart (two scales, two axes - never blended into one number). MyCP has no per-row dates in the baseline, so it stays a single static figure rather than a trend line."
+        description="Weekly trend across the full loaded data span - Web, CRM, MyCP and After Stay (Medallia) on one chart (three scales, three axes - never blended into one number). MyCP has no per-row dates in the static baseline, so it is shown as a flat reference line (its current NPS) rather than a fabricated trend; it becomes a real trend line once a live per-market upload is loaded. Medallia's line is real (either the static extraction's own weekly series, or a live upload)."
       >
         {weeklyTrend.length === 0 ? (
           <EmptyState description="No Hotjar or CRM rows to trend." />
         ) : (
-          <div style={{ width: '100%', height: 260 }}>
+          <div style={{ width: '100%', height: 280 }}>
             <ResponsiveContainer>
-              <LineChart data={weeklyTrend}>
+              <LineChart data={weeklyTrend} margin={{ right: 24 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--cv-border)" />
                 <XAxis dataKey="week" fontSize={12} />
                 <YAxis yAxisId="web" domain={[1, 5]} fontSize={12} stroke="var(--cv-blue)" label={{ value: 'Web / 5', angle: -90, position: 'insideLeft', fontSize: 11, fill: 'var(--cv-blue)' }} />
                 <YAxis yAxisId="crm" orientation="right" domain={[0, 100]} unit="%" fontSize={12} stroke="var(--cv-green)" label={{ value: 'CRM %', angle: 90, position: 'insideRight', fontSize: 11, fill: 'var(--cv-green)' }} />
+                <YAxis yAxisId="nps" orientation="right" domain={[-100, 100]} fontSize={12} stroke="var(--cv-purple)" label={{ value: 'NPS', angle: 90, position: 'insideRight', fontSize: 11, fill: 'var(--cv-purple)', offset: 40 }} />
                 <Tooltip />
                 <Legend />
                 <Line
@@ -164,6 +182,24 @@ export function OverviewTab() {
                   strokeWidth={2}
                   connectNulls
                 />
+                <Line
+                  yAxisId="nps"
+                  type="monotone"
+                  dataKey="medalliaNps"
+                  name="After Stay (Medallia) NPS"
+                  stroke="var(--cv-orange)"
+                  strokeWidth={2}
+                  connectNulls
+                />
+                <ReferenceLine
+                  yAxisId="nps"
+                  y={mycpStatsForTrend.nps}
+                  stroke="var(--cv-purple)"
+                  strokeDasharray="5 4"
+                  strokeWidth={2}
+                  ifOverflow="extendDomain"
+                  label={{ value: 'MyCP NPS (static)', position: 'insideBottomLeft', fontSize: 10, fill: 'var(--cv-purple)' }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -171,8 +207,8 @@ export function OverviewTab() {
       </SectionPlaceholder>
 
       <SectionPlaceholder
-        title="KPI Cards - Web, MyCP, CRM, Post-stay"
-        description="One KPI card per source, following the Scope filter below. MyCP uses the validated static baseline (or the live upload once all six markets are loaded) - never a fixture-derived number."
+        title="KPI Cards - Web, MyCP, CRM, After Stay"
+        description="One KPI card per source, following the Scope filter below. MyCP and After Stay (Medallia) each use their own validated static baseline (or a live upload) - never a fixture-derived number."
       >
         <div className="kpi-grid">
           {(scope === 'all' || scope === 'web') && (
@@ -204,11 +240,11 @@ export function OverviewTab() {
           )}
           {(scope === 'all' || scope === 'post-stay') && (
             <KpiCard
-              label="Post-stay"
-              value={null}
-              tone="neutral"
-              emptyMessage="Non applicable"
-              footnote="No post-stay source is wired in yet. Medallia is a future candidate source and will never be merged with MyCP (DATA_MODEL_ADDENDUM.md §3)."
+              label="After Stay (Medallia)"
+              value={medalliaStatsForTrend.average.toFixed(1)}
+              unit=" / 10"
+              tone="orange"
+              footnote={`NPS ${formatNps(medalliaStatsForTrend.nps)} · ${medalliaStatsForTrend.responses} responses - never merged with MyCP (DATA_MODEL_ADDENDUM.md §3).`}
             />
           )}
         </div>
@@ -242,7 +278,7 @@ export function OverviewTab() {
               <option value="web">Web only</option>
               <option value="mycp">MyCP only</option>
               <option value="crm">CRM only</option>
-              <option value="post-stay">Post-stay only</option>
+              <option value="post-stay">After Stay only</option>
             </select>
           </FilterField>
           <FilterField label="Survey">
@@ -414,10 +450,9 @@ export function OverviewTab() {
             ))}
         </ol>
         <InfoNote>
-          Future candidate source: Medallia (21,707 responses, April 2026 export) may eventually
-          appear here as an explicitly-labeled, separate metric (e.g. "NPS - Medallia") - pending
-          Marketing sign-off. It will never be merged with the MyCP NPS shown on the MyCP tab
-          (docs/DATA_MODEL_ADDENDUM.md §3).
+          Medallia (After Stay tab) appears elsewhere on this page as its own explicitly-labeled
+          metric ("After Stay (Medallia) NPS") - it is never merged with the MyCP NPS shown here
+          or on the MyCP tab (docs/DATA_MODEL_ADDENDUM.md §3).
         </InfoNote>
       </SectionPlaceholder>
     </div>
